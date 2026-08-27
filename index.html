@@ -240,6 +240,40 @@ const F = (() => {
   // 折れ線のSVG path文字列（動きの経路を描くのに使う）
   const pathD = (pts) => pts.map((p, i) => (i ? "L" : "M") + p[0] + " " + p[1]).join(" ");
 
+  // 打球の軌道の「ふくらみ」（実況アプリの打球図と同じ流儀・400px座標の1/4換算）
+  //   fly=大きい山なり / hit=前ヒットのゆるい弧 / liner=低くするどい弧 / grounder=直線
+  const BALL_BULGE = { grounder: 0, hit: 7.5, liner: 5.5, fly: 15 };
+
+  // 打球のカーブの制御点。ゴロ（ふくらみ0）は null
+  const ballCtrl = (ball, traj) => {
+    const bulge = BALL_BULGE[traj] || 0;
+    if (!bulge) return null;
+    const a = ball[0], b = ball[ball.length - 1];
+    const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+    const side = b[0] >= a[0] ? 1 : -1;   // 右方向の打球は右へ、左方向は左へふくらむ
+    return [mx - dy / len * bulge * side, my + dx / len * bulge * side];
+  };
+
+  // 打球の軌道のSVG path（ゴロ=直線・それ以外=カーブ）
+  const ballPathD = (ball, traj) => {
+    const c = ballCtrl(ball, traj);
+    if (!c) return pathD(ball);
+    const a = ball[0], b = ball[ball.length - 1];
+    return "M" + a[0] + " " + a[1] + " Q " + c[0].toFixed(1) + " " + c[1].toFixed(1) + " " + b[0] + " " + b[1];
+  };
+
+  // 打球の t(0〜1) 時点の位置（アニメ用。カーブの上を通る）
+  const lerpBall = (ball, traj, t) => {
+    const c = ballCtrl(ball, traj);
+    if (!c) return lerpPath(ball, t);
+    if (t <= 0) return ball[0].slice();
+    if (t >= 1) return ball[ball.length - 1].slice();
+    const a = ball[0], b = ball[ball.length - 1], u = 1 - t;
+    return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0],
+            u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]];
+  };
+
   // 折れ線上を t(0〜1) の割合で進んだ地点。アニメの1コマぶんの位置を出す
   const lerpPath = (pts, t) => {
     if (!pts || !pts.length) return null;
@@ -319,7 +353,7 @@ const F = (() => {
     return s;
   };
 
-  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, dist, inFair, pathD, lerpPath, playerSVG, runnerSVG, fieldSVG };
+  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, dist, inFair, pathD, lerpPath, ballPathD, lerpBall, playerSVG, runnerSVG, fieldSVG };
 })();
 if (typeof module !== "undefined") module.exports = F;
 
@@ -356,6 +390,8 @@ const E = (() => {
       else if (seen[sc.id]) at("idが重複");
       if (sc.id) seen[sc.id] = true;
       if (!sc.title) at("titleが無い");
+      if (["grounder", "hit", "liner", "fly"].indexOf(sc.traj) < 0)
+        at("trajが無い/変な値（grounder=ゴロ, hit=前ヒット, liner=ライナー, fly=フライ から選ぶ）");
       if (!Array.isArray(sc.ball) || sc.ball.length < 2) at("ball軌道が短い");
       else if (!sc.foul) {
         // 打球はフェアゾーンに落ちる（ファウルの場面を作るときは foul:true を付ける）
@@ -454,6 +490,9 @@ if (typeof module !== "undefined") module.exports = E;
 //   [] （からっぽ）   = そのまま動かない（正解は定位置）
 //   [定位置, 行き先]  = 定位置から行き先へ動く（最後の点が「正解の場所」＝クイズの答え）
 //
+// 【traj＝打球の種類（軌道の見た目が変わる）】
+//   "grounder"=ゴロ（直線） / "hit"=前ヒット（ゆるい弧） / "liner"=ライナー（低い弧） / "fly"=フライ・オーバー（大きい山なり）
+//
 // 【role】 その人の役目を2〜5文字で（ボール／ちゅうけい／ベースカバー／バックアップ／そのまま）
 // 【why】  なぜそこへ行くのかを、子どもの言葉でひとこと
 //
@@ -488,7 +527,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 打球が左へ行ったら「ショートが中継・セカンドが二塁ベース」
   // ============================================================
   {
-    id: "S01", title: "ランナーなし・レフト前ヒット", level: "きほん",
+    id: "S01", traj: "hit", title: "ランナーなし・レフト前ヒット", level: "きほん",
     situation: { runners: [], outs: 0, play: "レフト前ヒット" },
     ball: [PT.ホーム, PT.レフト前],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -511,7 +550,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: まん中の打球は「ショートが二塁ベース」
   // ============================================================
   {
-    id: "S02", title: "ランナーなし・センター前ヒット", level: "きほん",
+    id: "S02", traj: "hit", title: "ランナーなし・センター前ヒット", level: "きほん",
     situation: { runners: [], outs: 0, play: "センター前ヒット" },
     ball: [PT.ホーム, PT.センター前],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -534,7 +573,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 1のちょうど反対。打球が右なら「セカンドが中継・ショートが二塁ベース」
   // ============================================================
   {
-    id: "S03", title: "ランナーなし・ライト前ヒット", level: "きほん",
+    id: "S03", traj: "hit", title: "ランナーなし・ライト前ヒット", level: "きほん",
     situation: { runners: [], outs: 0, play: "ライト前ヒット" },
     ball: [PT.ホーム, PT.ライト前],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -557,7 +596,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 内野ゴロは「ライトが一塁の後ろ・キャッチャーも一塁へ走る」
   // ============================================================
   {
-    id: "S04", title: "ランナーなし・三遊間ゴロ", level: "きほん",
+    id: "S04", traj: "grounder", title: "ランナーなし・三遊間ゴロ", level: "きほん",
     situation: { runners: [], outs: 0, play: "三遊間ゴロ" },
     ball: [PT.ホーム, [34, 58]],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -579,7 +618,7 @@ var SCENARIOS = [
   // 5 ランナーなし・セカンドゴロ
   // ============================================================
   {
-    id: "S05", title: "ランナーなし・セカンドゴロ", level: "きほん",
+    id: "S05", traj: "grounder", title: "ランナーなし・セカンドゴロ", level: "きほん",
     situation: { runners: [], outs: 0, play: "セカンドゴロ" },
     ball: [PT.ホーム, [60, 55]],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -601,7 +640,7 @@ var SCENARIOS = [
   // 6 ランナーなし・投手ゴロ
   // ============================================================
   {
-    id: "S06", title: "ランナーなし・ピッチャーゴロ", level: "きほん",
+    id: "S06", traj: "grounder", title: "ランナーなし・ピッチャーゴロ", level: "きほん",
     situation: { runners: [], outs: 0, play: "ピッチャーゴロ" },
     ball: [PT.ホーム, [49, 77]],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -624,7 +663,7 @@ var SCENARIOS = [
   //   ★定番中の定番: ファーストが 取りに行ったら、ピッチャーが一塁ベースに入る
   // ============================================================
   {
-    id: "S07", title: "ランナーなし・一るい線ゴロ", level: "きほん",
+    id: "S07", traj: "grounder", title: "ランナーなし・一るい線ゴロ", level: "きほん",
     situation: { runners: [], outs: 0, play: "一るい線ゴロ" },
     ball: [PT.ホーム, [68, 66]],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁] }],
@@ -647,7 +686,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 送球が三塁へ行くので、ピッチャーは三塁の後ろへ
   // ============================================================
   {
-    id: "S08", title: "ランナー1るい・レフト前ヒット", level: "おうよう",
+    id: "S08", traj: "hit", title: "ランナー1るい・レフト前ヒット", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "レフト前ヒット" },
     ball: [PT.ホーム, PT.レフト前],
     runs: [
@@ -672,7 +711,7 @@ var SCENARIOS = [
   // 9 ランナー1塁・ライト前ヒット
   // ============================================================
   {
-    id: "S09", title: "ランナー1るい・ライト前ヒット", level: "おうよう",
+    id: "S09", traj: "hit", title: "ランナー1るい・ライト前ヒット", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "ライト前ヒット" },
     ball: [PT.ホーム, PT.ライト前],
     runs: [
@@ -698,7 +737,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: とおくの打球は「ちゅうけい2まい」でつなぐ
   // ============================================================
   {
-    id: "S10", title: "ランナー1るい・センターオーバー", level: "おうよう",
+    id: "S10", traj: "fly", title: "ランナー1るい・センターオーバー", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "センターオーバーの長打" },
     ball: [PT.ホーム, [50, 12]],
     runs: [
@@ -723,7 +762,7 @@ var SCENARIOS = [
   // 11 ランナー1塁・内野ゴロ（ゲッツーねらい）
   // ============================================================
   {
-    id: "S11", title: "ランナー1るい・セカンドゴロ（ゲッツー）", level: "おうよう",
+    id: "S11", traj: "grounder", title: "ランナー1るい・セカンドゴロ（ゲッツー）", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "セカンドゴロ" },
     ball: [PT.ホーム, [60, 55]],
     runs: [
@@ -749,7 +788,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: ファーストが前に出たら、セカンドが一塁ベースに入る
   // ============================================================
   {
-    id: "S12", title: "ランナー1るい・バント", level: "おうよう",
+    id: "S12", traj: "grounder", title: "ランナー1るい・バント", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "バント" },
     ball: [PT.ホーム, [44, 78]],
     runs: [
@@ -775,7 +814,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: ホームへ投げるときは、ピッチャーがホームの後ろへ
   // ============================================================
   {
-    id: "S13", title: "ランナー2るい・レフト前ヒット", level: "おうよう",
+    id: "S13", traj: "hit", title: "ランナー2るい・レフト前ヒット", level: "おうよう",
     situation: { runners: ["2"], outs: 0, play: "レフト前ヒット" },
     ball: [PT.ホーム, PT.レフト前],
     runs: [
@@ -801,7 +840,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: センター・ライトからホームへ投げるときは「ファーストがカット」
   // ============================================================
   {
-    id: "S14", title: "ランナー2るい・センター前ヒット", level: "おうよう",
+    id: "S14", traj: "hit", title: "ランナー2るい・センター前ヒット", level: "おうよう",
     situation: { runners: ["2"], outs: 0, play: "センター前ヒット" },
     ball: [PT.ホーム, PT.センター前],
     runs: [
@@ -826,7 +865,7 @@ var SCENARIOS = [
   // 15 ランナー2塁・ライト前ヒット
   // ============================================================
   {
-    id: "S15", title: "ランナー2るい・ライト前ヒット", level: "おうよう",
+    id: "S15", traj: "hit", title: "ランナー2るい・ライト前ヒット", level: "おうよう",
     situation: { runners: ["2"], outs: 0, play: "ライト前ヒット" },
     ball: [PT.ホーム, PT.ライト前],
     runs: [
@@ -852,7 +891,7 @@ var SCENARIOS = [
   //   ★フライはランナーが「もどる」。とった後もベースを空けない
   // ============================================================
   {
-    id: "S16", title: "ランナー1,2るい・あさいレフトフライ", level: "おうよう",
+    id: "S16", traj: "fly", title: "ランナー1,2るい・あさいレフトフライ", level: "おうよう",
     situation: { runners: ["1", "2"], outs: 1, play: "あさいレフトフライ" },
     ball: [PT.ホーム, [36, 38]],
     runs: [
@@ -877,7 +916,7 @@ var SCENARIOS = [
   // 17 ランナー1,3塁・内野ゴロ
   // ============================================================
   {
-    id: "S17", title: "ランナー1,3るい・ショートゴロ", level: "おうよう",
+    id: "S17", traj: "grounder", title: "ランナー1,3るい・ショートゴロ", level: "おうよう",
     situation: { runners: ["1", "3"], outs: 0, play: "ショートゴロ" },
     ball: [PT.ホーム, [42, 55]],
     runs: [
@@ -903,7 +942,7 @@ var SCENARIOS = [
   // 18 まんるい・あさい外野フライ
   // ============================================================
   {
-    id: "S18", title: "まんるい・あさいセンターフライ", level: "おうよう",
+    id: "S18", traj: "fly", title: "まんるい・あさいセンターフライ", level: "おうよう",
     situation: { runners: ["1", "2", "3"], outs: 1, play: "あさいセンターフライ" },
     ball: [PT.ホーム, [50, 33]],
     runs: [
@@ -930,7 +969,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 打球が右へ深く行ったら「セカンドが前・ショートが後ろ」の2まい
   // ============================================================
   {
-    id: "S19", title: "ランナーなし・ライト線の長打", level: "おうよう",
+    id: "S19", traj: "liner", title: "ランナーなし・ライト線の長打", level: "おうよう",
     situation: { runners: [], outs: 0, play: "ライト線をやぶる長打" },
     ball: [PT.ホーム, [82, 35]],
     runs: [{ id: "B", path: [PT.ホーム, PT.一塁, PT.二塁, PT.三塁] }],
@@ -953,7 +992,7 @@ var SCENARIOS = [
   //   ★おぼえどころ: 打球が左へ深く行ったら「ショートが前・セカンドが後ろ」の2まい
   // ============================================================
   {
-    id: "S20", title: "ランナー1るい・レフトオーバー", level: "おうよう",
+    id: "S20", traj: "fly", title: "ランナー1るい・レフトオーバー", level: "おうよう",
     situation: { runners: ["1"], outs: 0, play: "レフトオーバーの長打" },
     ball: [PT.ホーム, [26, 18]],
     runs: [
@@ -1091,8 +1130,10 @@ function fieldInner(sc, my, opt) {
     });
   }
   // ボールの線（どんな打球かは出題中も見せる）
-  inner += '<path d="' + F.pathD(sc.ball) + '" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="'
-    + (opt.trails ? 0.45 : 0.7) + '" stroke-dasharray="1.4 1.6"/>';
+  // 実況アプリの打球図と同じ描き分け: ゴロ=直線の実線 / フライ・ヒット・ライナー=ふくらんだ点線
+  var ballDash = sc.traj === "grounder" ? "" : ' stroke-dasharray="1.4 1.6"';
+  inner += '<path d="' + F.ballPathD(sc.ball, sc.traj) + '" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="'
+    + (opt.trails ? 0.45 : 0.7) + '"' + ballDash + '/>';
   if (opt.trails) {
     // 走者の線（あかい点線）— なぜ守備がそう動くのかは、走者を見れば分かる
     (sc.runs || []).forEach(function (r) {
@@ -1161,7 +1202,9 @@ function animate(hostId, sc, my) {
       var pt = F.lerpPath(r.path, t);
       runners[r.id].setAttribute("transform", "translate(" + pt[0] + " " + pt[1] + ")");
     });
-    var bp = F.lerpPath(sc.ball, Math.min(1, t / 0.5)); // ボールは前半で着地
+    // ボールが先・人が追う。フライは滞空が長い（着地までの時間で描き分ける）
+    var land = sc.traj === "fly" ? 0.7 : sc.traj === "grounder" ? 0.4 : 0.5;
+    var bp = F.lerpBall(sc.ball, sc.traj, Math.min(1, t / land));
     ball.setAttribute("cx", bp[0]); ball.setAttribute("cy", bp[1]);
   };
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
