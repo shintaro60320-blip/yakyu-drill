@@ -77,8 +77,9 @@ button[disabled] { opacity: .45; cursor: default; }
 .posname .num { display: inline-block; background: var(--gold); color: #3d2c05; border-radius: 999px;
   width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; font-weight: 800; margin-right: 6px; }
 .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; margin: var(--s2) 0; }
-.reset { display: block; margin: 0 auto var(--s3); background: none; border: none; color: var(--sub);
-  font-size: .82rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; padding: 10px 16px; min-height: 40px; }
+.reset { display: block; margin: 0 auto var(--s3); font-size: .95rem; font-weight: 800; letter-spacing: .02em;
+  padding: 10px 22px; min-height: 44px; border-radius: 999px; color: var(--green-deep); border-color: #c9d9cf;
+  box-shadow: 0 1px 2px rgba(28,42,36,.06); }
 .reset[hidden] { display: none; }
 .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--green) 0%, #3f9a63 60%, var(--gold) 100%); border-radius: 999px; transition: width .4s cubic-bezier(.2,.7,.3,1); }
 
@@ -192,7 +193,7 @@ button[disabled] { opacity: .45; cursor: default; }
   <div class="posname" id="posName"></div>
   <div class="bar"><i id="posBar" style="width:0%"></i></div>
   <div class="note" id="posProg" style="text-align:center;margin-bottom:4px"></div>
-  <button class="reset" id="btnReset" hidden>記ろくをリセットして、さいしょからやる</button>
+  <button class="reset" id="btnReset" hidden>↻ さいしょからちょうせん</button>
   <div class="bigbtns">
     <button class="bigbtn primary" id="btnZukan">ずかんを見る<span class="sub">みんなの動きをアニメで</span></button>
     <button class="bigbtn" id="btnQuiz">クイズにちょうせん<span class="sub">どこへ動くかタップで答える</span></button>
@@ -1613,9 +1614,9 @@ document.getElementById("homeField").addEventListener("click", function (ev) {
 // 正解の記録をその役目だけ消す（クイズは未クリアの場面から出るので、全部クリアせんと最初からやり直せんかった）
 $("btnReset").onclick = function () {
   var me = meRole(); if (!me) return;
-  if (!confirm(meName() + " の記ろくを消して、さいしょからやり直す？")) return;
+  if (!confirm(meName() + " の正かいの記ろくを消して、さいしょからちょうせんする？")) return;
   App.progress = E.resetRole(App.progress, me);
-  save(); renderHome(); toast("記ろくをリセットしました");
+  save(); renderHome(); toast("さいしょからちょうせん！");
 };
 $("tabDefense").onclick = function () { App.mode = "defense"; save(); renderHome(); };
 $("tabAttack").onclick = function () { App.mode = "attack"; save(); renderHome(); };
