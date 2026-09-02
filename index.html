@@ -77,6 +77,9 @@ button[disabled] { opacity: .45; cursor: default; }
 .posname .num { display: inline-block; background: var(--gold); color: #3d2c05; border-radius: 999px;
   width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; font-weight: 800; margin-right: 6px; }
 .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; margin: var(--s2) 0; }
+.reset { display: block; margin: 0 auto var(--s3); background: none; border: none; color: var(--sub);
+  font-size: .82rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; padding: 10px 16px; min-height: 40px; }
+.reset[hidden] { display: none; }
 .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--green) 0%, #3f9a63 60%, var(--gold) 100%); border-radius: 999px; transition: width .4s cubic-bezier(.2,.7,.3,1); }
 
 .modetabs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); padding: var(--s1);
@@ -188,7 +191,8 @@ button[disabled] { opacity: .45; cursor: default; }
   <div class="fieldbox"><div id="homeField"></div></div>
   <div class="posname" id="posName"></div>
   <div class="bar"><i id="posBar" style="width:0%"></i></div>
-  <div class="note" id="posProg" style="text-align:center;margin-bottom:16px"></div>
+  <div class="note" id="posProg" style="text-align:center;margin-bottom:4px"></div>
+  <button class="reset" id="btnReset" hidden>記ろくをリセットして、さいしょからやる</button>
   <div class="bigbtns">
     <button class="bigbtn primary" id="btnZukan">ずかんを見る<span class="sub">みんなの動きをアニメで</span></button>
     <button class="bigbtn" id="btnQuiz">クイズにちょうせん<span class="sub">どこへ動くかタップで答える</span></button>
@@ -617,6 +621,14 @@ const E = (() => {
     return p;
   };
 
+  // その役目/ポジションの正解記録だけ消す（とと 2026-09-03「最初からやり直したい時のリセットボタン」）。
+  // 合計(total)はアプリ全体の数なので触らん
+  const resetRole = (prog, role) => {
+    const p = JSON.parse(JSON.stringify(prog));
+    p.cleared[role] = [];
+    return p;
+  };
+
   // 保存データが壊れていても落ちないよう、形を整えて返す
   const normalizeProgress = (raw) => {
     const base = newProgress();
@@ -629,7 +641,7 @@ const E = (() => {
     return base;
   };
 
-  return { POSN, ROLEN, ROLE_JA, RUNNERN, DECISIONS, isCoach, answerOf, judge, lint, pickQuiz, newProgress, applyResult, normalizeProgress,
+  return { POSN, ROLEN, ROLE_JA, RUNNERN, DECISIONS, isCoach, answerOf, judge, lint, pickQuiz, newProgress, applyResult, resetRole, normalizeProgress,
            attackRoles, attackScenes, attackQuestions, runnerAnswer, judgeRunner };
 })();
 if (typeof module !== "undefined") module.exports = E;
@@ -1581,7 +1593,9 @@ function renderHome() {
     var all = myScenes().length;
     $("posBar").style.width = (all ? Math.round(done / all * 100) : 0) + "%";
     $("posProg").textContent = "クイズ正かい " + done + " / " + all + " 場面";
+    $("btnReset").hidden = done === 0;
   } else {
+    $("btnReset").hidden = true;
     $("posName").textContent = isAttack() ? "▲ グラウンドの人をタップ" : "▲ グラウンドのせんしゅをタップ";
     $("posBar").style.width = "0%";
     $("posProg").textContent = "";
@@ -1596,6 +1610,13 @@ document.getElementById("homeField").addEventListener("click", function (ev) {
   else App.pos = g.getAttribute("data-pos");
   save(); renderHome();
 });
+// 正解の記録をその役目だけ消す（クイズは未クリアの場面から出るので、全部クリアせんと最初からやり直せんかった）
+$("btnReset").onclick = function () {
+  var me = meRole(); if (!me) return;
+  if (!confirm(meName() + " の記ろくを消して、さいしょからやり直す？")) return;
+  App.progress = E.resetRole(App.progress, me);
+  save(); renderHome(); toast("記ろくをリセットしました");
+};
 $("tabDefense").onclick = function () { App.mode = "defense"; save(); renderHome(); };
 $("tabAttack").onclick = function () { App.mode = "attack"; save(); renderHome(); };
 
