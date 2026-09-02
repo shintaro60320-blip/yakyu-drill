@@ -396,13 +396,14 @@ const F = (() => {
 
   // コーチャーマーカー。走者(丸)と区別できるよう角丸の四角・白地に濃いふち・ラベル「コ」
   //   白地なので場外(暗い芝)の上でも見える（守備の白丸と同じ根拠）。自分のときは金色（o.fill）
+  //   脈打つ輪(halo)は白で固定：こげ茶のふちの色だと、暗い場外の上で見えん（とと 2026-09-03「コーチャー自身の輪がなかった」）
   const coachSVG = (id, xy, o) => {
     o = o || {};
     const r = o.r || 3.8;
     const fill = o.fill || "#ffffff", stroke = o.stroke || "#1c2a24", ink = o.ink || "#1c2a24";
     return '<g class="coach' + (o.cls ? " " + o.cls : "") + '" data-role="' + id + '" transform="translate(' + xy[0] + ' ' + xy[1] + ')">'
       + (o.tap ? '<circle r="7.5" fill="transparent"/>' : '')
-      + (o.halo ? '<circle class="halo" r="' + r + '" fill="none" stroke="' + stroke + '" stroke-width="1"/>' : '')
+      + (o.halo ? '<circle class="halo" r="' + r + '" fill="none" stroke="#ffffff" stroke-width="1"/>' : '')
       + '<rect x="' + (-r) + '" y="' + (-r) + '" width="' + (2 * r) + '" height="' + (2 * r) + '" rx="1.2" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (o.sw || 0.9) + '"/>'
       + '<text y="1.4" text-anchor="middle" font-size="4" font-weight="700" fill="' + ink + '">コ</text>'
       + '</g>';
