@@ -30,7 +30,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", Meiryo, sans-serif;
-  background: var(--bg); color: var(--ink); line-height: 1.75;
+  background: radial-gradient(120% 55% at 50% -12%, #e3efe7 0%, var(--bg) 62%) fixed, var(--bg);
+  color: var(--ink); line-height: 1.75;
   max-width: 560px; margin: 0 auto;
   padding-bottom: calc(var(--s4) + env(safe-area-inset-bottom));
 }
@@ -40,19 +41,29 @@ button { font-family: inherit; font-size: 1rem; color: var(--ink); background: v
 button:active { transform: translateY(1px); }
 button[disabled] { opacity: .45; cursor: default; }
 
-.head { background: radial-gradient(150% 130% at 50% -40%, #266b42 0%, #1a4d30 55%, #123722 100%);
-  color: #fff; padding: var(--s3); display: flex; align-items: center; gap: var(--s2); }
-.head h1 { font-size: 1.15rem; letter-spacing: .06em; font-weight: 800; }
+.head { background: radial-gradient(150% 130% at 50% -40%, #2a7449 0%, #1a4d30 55%, #0f2e1c 100%);
+  color: #fff; padding: 22px var(--s3); display: flex; align-items: center; gap: var(--s2);
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 0 rgba(255,215,94,.55), 0 6px 18px rgba(18,55,34,.28); }
+.head::before, .head::after { content: ""; position: absolute; top: 50%; border-radius: 14px; pointer-events: none;
+  transform: translateY(-50%) rotate(45deg); }
+.head::before { right: -72px; width: 200px; height: 200px; border: 1.5px solid rgba(255,255,255,.08); }
+.head::after  { right: -30px; width: 124px; height: 124px; border: 1.5px solid rgba(255,215,94,.35);
+  box-shadow: 0 0 24px rgba(255,215,94,.18); }
+.head h1 { font-size: 1.4rem; letter-spacing: .12em; font-weight: 800; position: relative; color: var(--gold);
+  background: linear-gradient(180deg, #fff3c4 0%, var(--gold) 55%, #e6b93b 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none; filter: drop-shadow(0 1px 0 rgba(0,0,0,.25)); }
 .head .back { background: rgba(255,255,255,.14); color: #fff; border: none; border-radius: 999px;
   padding: 8px 16px; font-size: .85rem; }
 
 .wrap { padding: var(--s3); }
-.lead { font-size: .95rem; font-weight: 700; letter-spacing: .03em; margin-bottom: var(--s2); }
+.lead { font-size: .95rem; font-weight: 700; letter-spacing: .05em; margin-bottom: var(--s2); }
 .note { font-size: .85rem; color: var(--sub); font-variant-numeric: tabular-nums; }
 
-.fieldbox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card);
-  padding: var(--s2); margin-bottom: var(--s3);
-  box-shadow: 0 1px 2px rgba(28,42,36,.06), 0 6px 18px rgba(28,42,36,.07); }
+.fieldbox { background: linear-gradient(180deg, #1c5433 0%, #12381f 100%); border: none; border-radius: var(--r-card);
+  padding: 10px; margin-bottom: var(--s3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 4px rgba(18,55,34,.18), 0 12px 28px rgba(18,55,34,.28); }
 .field { width: 100%; height: auto; display: block; border-radius: 10px; }
 .actor { transition: none; }
 .actor.dim { opacity: .72; }
@@ -64,12 +75,33 @@ button[disabled] { opacity: .45; cursor: default; }
 .posname .num { display: inline-block; background: var(--gold); color: #3d2c05; border-radius: 999px;
   width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; font-weight: 800; margin-right: 6px; }
 .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; margin: var(--s2) 0; }
-.bar > i { display: block; height: 100%; background: var(--green); border-radius: 999px; transition: width .3s; }
+.bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--green) 0%, #3f9a63 60%, var(--gold) 100%); border-radius: 999px; transition: width .4s cubic-bezier(.2,.7,.3,1); }
 
+.modetabs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); padding: var(--s1);
+  background: var(--green-pale); border-radius: 999px; margin-bottom: var(--s3); }
+.modetabs .tab { padding: 12px; font-weight: 800; letter-spacing: .04em; border: none; border-radius: 999px;
+  background: transparent; color: var(--green-deep);
+  transition: background .18s cubic-bezier(.2,.7,.3,1), color .18s cubic-bezier(.2,.7,.3,1); }
+.modetabs .tab:active { transform: none; }
+.modetabs .tab.on { background: var(--green); color: #fff;
+  box-shadow: 0 1px 2px rgba(28,42,36,.12), 0 3px 8px rgba(31,92,57,.24); }
+.coach { transition: none; }
+.coach.dim { opacity: .72; }
+.coach.pick, .runner.pick { cursor: pointer; }
+.legend .sw.coach { background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; }
+.dec { display: inline-block; background: var(--amber); color: #fff; border-radius: 999px; padding: 2px 12px; font-size: .85rem; font-weight: 800; margin-right: var(--s2); }
+.subq { display: flex; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); font-size: .85rem; font-weight: 700; }
+.subq span { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px; }
+.subq span.ok { color: var(--green-deep); border-color: var(--green); }
+.subq span.ng { color: #8e2b21; border-color: #8e2b21; }
 .bigbtns { display: grid; gap: var(--s2); }
-.bigbtn { padding: var(--s3); font-size: 1.1rem; font-weight: 800; border-radius: var(--r-card);
-  display: flex; align-items: center; gap: var(--s2); min-height: 56px; }
-.bigbtn.primary { background: var(--green); color: #fff; border-color: var(--green-deep); }
+.bigbtn { padding: var(--s3) 20px; font-size: 1.1rem; font-weight: 800; border-radius: var(--r-card);
+  display: flex; align-items: center; gap: var(--s2); min-height: 60px; letter-spacing: .02em;
+  box-shadow: 0 1px 2px rgba(28,42,36,.06), 0 4px 12px rgba(28,42,36,.06); }
+.bigbtn::after { content: "›"; margin-left: auto; font-size: 1.4rem; opacity: .55; line-height: 1; }
+.bigbtn.primary { background: linear-gradient(180deg, #35895a 0%, var(--green) 45%, #276e45 100%); color: #fff; border-color: var(--green-deep);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px rgba(28,42,36,.12), 0 6px 16px rgba(31,92,57,.3); }
+.bigbtn.primary::after { opacity: .8; }
 .bigbtn .sub { font-size: .8rem; font-weight: 400; opacity: .85; }
 
 .list { display: grid; gap: var(--s2); }
@@ -79,9 +111,9 @@ button[disabled] { opacity: .45; cursor: default; }
   border-radius: var(--r-card); padding: var(--s3); text-align: left; width: 100%;
   display: flex; align-items: center; gap: var(--s2); min-height: 56px; }
 .card .t { font-weight: 700; flex: 1; }
-.card .chk { color: var(--green); font-weight: 800; font-size: .85rem; }
+.card .chk { background: var(--gold); color: #3d2c05; font-weight: 800; font-size: .78rem; border-radius: 999px; padding: 2px 10px; letter-spacing: .02em; }
 
-.legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 12px 4px 4px; font-size: .8rem; color: var(--sub); }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 12px 4px 2px; font-size: .8rem; color: #dbe8df; font-weight: 700; letter-spacing: .02em; }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend .sw { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
 .legend .sw.mine { background: var(--gold); border: 1.5px solid #3d2c05; }
@@ -89,8 +121,9 @@ button[disabled] { opacity: .45; cursor: default; }
 .legend .sw.run { background: #8e2b21; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #8e2b21; }
 .legend .sw.ball { background: #fff; border: 1.5px solid #3d2c05; width: 9px; height: 9px; }
 
-.sit { background: var(--green-pale); color: var(--green-deep); border-radius: var(--r-btn);
-  padding: var(--s2) var(--s3); font-weight: 700; margin-bottom: var(--s2); }
+.sit { background: linear-gradient(180deg, #1f5c39, #17482c); color: #fff; border-radius: var(--r-btn);
+  padding: 10px var(--s3); font-weight: 800; letter-spacing: .04em; margin-bottom: var(--s2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(255,215,94,.22); }
 .mycard { background: var(--amber-pale); border: 2px solid #e8c98a; border-radius: var(--r-card);
   padding: var(--s3); margin-bottom: var(--s3); }
 .mycard .role { font-size: .8rem; font-weight: 800; color: var(--amber); letter-spacing: .08em; }
@@ -116,12 +149,17 @@ button[disabled] { opacity: .45; cursor: default; }
 .judge { border-radius: var(--r-card); padding: var(--s3); margin-bottom: var(--s3); border: 2px solid; }
 .judge.ok { background: var(--green-pale); border-color: var(--green); }
 .judge.ng { background: #fdeceb; border-color: #8e2b21; }
-.judge .mark { font-size: 1.3rem; font-weight: 800; }
+.judge .mark { font-size: 1.5rem; font-weight: 800; letter-spacing: .04em; animation: pop .28s cubic-bezier(.2,.9,.3,1.3) both; }
+@keyframes pop { 0% { transform: scale(.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 .judge.ok .mark { color: var(--green-deep); }
 .judge.ng .mark { color: #8e2b21; }
 .judge .why { font-weight: 700; margin-top: var(--s1); }
-.rbig { text-align: center; font-size: 3rem; font-weight: 800; color: var(--green-deep);
-  letter-spacing: .02em; line-height: 1.2; font-variant-numeric: tabular-nums; margin: var(--s4) 0 var(--s2); }
+.rcard { background: radial-gradient(120% 120% at 50% -30%, #2a7449 0%, #1a4d30 55%, #0f2e1c 100%); border-radius: var(--r-card);
+  padding: var(--s4) var(--s3); margin: var(--s2) 0 var(--s4); text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 12px 28px rgba(18,55,34,.3); }
+.rbig { font-size: 3.4rem; font-weight: 800; color: var(--gold); letter-spacing: .02em; line-height: 1.15;
+  font-variant-numeric: tabular-nums; text-shadow: 0 0 18px rgba(255,215,94,.35), 0 2px 0 rgba(0,0,0,.25); }
+.rcard .note { color: #dbe8df; margin-top: var(--s1); }
 
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
   background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px; font-size: .9rem;
@@ -139,7 +177,11 @@ button[disabled] { opacity: .45; cursor: default; }
 
 <!-- ===== ホーム: ポジションをえらぶ ===== -->
 <div class="wrap" id="scHome">
-  <div class="lead">自分のポジションをえらぼう</div>
+  <div class="modetabs">
+    <button class="tab on" id="tabDefense" data-mode="defense">まもる</button>
+    <button class="tab" id="tabAttack" data-mode="attack">せめる</button>
+  </div>
+  <div class="lead" id="homeLead">自分のポジションをえらぼう</div>
   <div class="fieldbox"><div id="homeField"></div></div>
   <div class="posname" id="posName"></div>
   <div class="bar"><i id="posBar" style="width:0%"></i></div>
@@ -171,6 +213,7 @@ button[disabled] { opacity: .45; cursor: default; }
   <div class="qhead"><span id="qCount"></span><span id="qScore"></span></div>
   <div class="sit" id="qSit"></div>
   <div class="ask" id="qAsk"></div>
+  <div class="subq" id="qSub"></div>
   <div class="fieldbox"><div id="qField"></div><div class="legend" id="qLegend"></div></div>
   <div id="qActions" style="margin-bottom:16px"></div>
   <div id="qFeedback" style="display:none"></div>
@@ -178,8 +221,7 @@ button[disabled] { opacity: .45; cursor: default; }
 
 <!-- ===== クイズ: けっか ===== -->
 <div class="wrap" id="scResult" style="display:none">
-  <div class="rbig" id="rScore"></div>
-  <div class="note" id="rDetail" style="text-align:center;margin-bottom:24px"></div>
+  <div class="rcard"><div class="rbig" id="rScore"></div><div class="note" id="rDetail"></div></div>
   <div class="bigbtns">
     <button class="bigbtn primary" id="btnQuizAgain">もう一度クイズ</button>
     <button class="bigbtn" id="btnToHome">ホームへもどる</button>
@@ -313,18 +355,70 @@ const F = (() => {
       + '</g>';
   };
 
+  // せめるモードの役割マーカーの位置（ホーム画面で「自分」を選ぶ場所）
+  //   走者は塁の上。バッターはホームのよこ（バッターボックス）。コーチャーは一るい側／三るい側のコーチャーズボックス（ファウル地域）
+  //   ★座標は「指の的が重ならんこと」で決めとる: 一番近い R1↔coach1 が 17.7（当たり判定の直径15より大きい）。
+  //     前は coach1[82,70] で 12.1 しか離れとらず、一るいランナーを押したのにコーチャーが選ばれる所があった。
+  //     B の下端も、ハローが図からはみ出さんように 88 に置いとる（89 だと 100.4 で外へ出る）。
+  const ROLE_POS = {
+    B: [57, 88], R1: BASES.first, R2: BASES.second, R3: BASES.third,
+    coach1: [86, 74], coach3: [14, 74]
+  };
+
+  // wait付きの位置計算（せめるモードの走者用）。pts[k] に「着地（捕球）の瞬間」に居る。
+  //   t<land: pts[0..k] を進む / t>=land: pts[k..] を進む。k が無ければ lerpPath と同じ。
+  //   これが無いと「タッチアップ」が捕球の前に走り出す絵になる（教えたいことと逆）。
+  const lerpPathWait = (pts, k, t, land) => {
+    if (k === undefined || k === null || !pts || pts.length < 2) return lerpPath(pts, t);
+    if (t < land) return lerpPath(pts.slice(0, k + 1), land > 0 ? t / land : 1);
+    return lerpPath(pts.slice(k), land < 1 ? (t - land) / (1 - land) : 1);
+  };
+
   // 走者マーカー。守備(白丸・黒ふち)とはっきり区別できるよう、あかい丸に白ふちにする
   //   色の根拠（WCAG検算済み）: 塗り#8e2b21 に白文字=8.34:1。
   //   図形としての見え方は「塗りと白ふちの良い方」で見る＝芝3.63 / 内野ダート3.47 / 場外7.46 で
   //   どの地色の上でも3:1以上（前の#b3362aは内野ダートの上で2.51しか出ず、塁の上で見えにくかった）
+  //   o.fill/stroke/ink=せめるモードで「自分」を金色にする / o.tap=指で押せる透明な的 / o.halo=脈打つ輪
   const runnerSVG = (id, xy, o) => {
     o = o || {};
     const label = id === "B" ? "打" : "走";
     const r = o.r || 3.8;
-    return '<g class="runner" data-run="' + id + '" transform="translate(' + xy[0] + ' ' + xy[1] + ')">'
-      + '<circle r="' + r + '" fill="#8e2b21" stroke="#ffffff" stroke-width="1"/>'
-      + '<text y="1.4" text-anchor="middle" font-size="4" font-weight="700" fill="#ffffff">' + label + '</text>'
+    const fill = o.fill || "#8e2b21", stroke = o.stroke || "#ffffff", ink = o.ink || "#ffffff";
+    return '<g class="runner' + (o.cls ? " " + o.cls : "") + '" data-run="' + id + '" transform="translate(' + xy[0] + ' ' + xy[1] + ')">'
+      + (o.tap ? '<circle r="7.5" fill="transparent"/>' : '')
+      + (o.halo ? '<circle class="halo" r="' + r + '" fill="none" stroke="' + stroke + '" stroke-width="1"/>' : '')
+      + '<circle r="' + r + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1"/>'
+      + '<text y="1.4" text-anchor="middle" font-size="4" font-weight="700" fill="' + ink + '">' + label + '</text>'
       + '</g>';
+  };
+
+  // コーチャーマーカー。走者(丸)と区別できるよう角丸の四角・白地に濃いふち・ラベル「コ」
+  //   白地なので場外(暗い芝)の上でも見える（守備の白丸と同じ根拠）。自分のときは金色（o.fill）
+  const coachSVG = (id, xy, o) => {
+    o = o || {};
+    const r = o.r || 3.8;
+    const fill = o.fill || "#ffffff", stroke = o.stroke || "#1c2a24", ink = o.ink || "#1c2a24";
+    return '<g class="coach' + (o.cls ? " " + o.cls : "") + '" data-role="' + id + '" transform="translate(' + xy[0] + ' ' + xy[1] + ')">'
+      + (o.tap ? '<circle r="7.5" fill="transparent"/>' : '')
+      + (o.halo ? '<circle class="halo" r="' + r + '" fill="none" stroke="' + stroke + '" stroke-width="1"/>' : '')
+      + '<rect x="' + (-r) + '" y="' + (-r) + '" width="' + (2 * r) + '" height="' + (2 * r) + '" rx="1.2" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (o.sw || 0.9) + '"/>'
+      + '<text y="1.4" text-anchor="middle" font-size="4" font-weight="700" fill="' + ink + '">コ</text>'
+      + '</g>';
+  };
+
+  // アウトカウントのランプ（グラウンド右上の場外に置く。とと 2026-09-03「右上あたりにアウトカウント」）
+  //   走塁の判断はアウトの数で変わるので、文章だけでなく試合のスコアボードと同じ「赤いランプ」で見せる。
+  //   点灯＝走者と同じ赤(#8e2b21)+白ふち（場外#2c5f3fの上で白ふちが7.46:1）／消灯＝白のふちだけ。ボール・ストライクは出さん（打った後の判断に関係ない）
+  const outsSVG = (outs) => {
+    const n = Math.max(0, Math.min(2, outs | 0));
+    let s = '<g class="outs" transform="translate(76 6)">'
+      + '<text x="0" y="1.5" font-size="3.6" font-weight="700" fill="#ffffff" opacity="0.9">アウト</text>';
+    for (let i = 0; i < 3; i++) {
+      const on = i < n;
+      s += '<circle cx="' + (16 + i * 5) + '" cy="0" r="1.9" fill="' + (on ? "#8e2b21" : "none")
+        + '" stroke="#ffffff" stroke-width="' + (on ? 0.8 : 0.6) + '" opacity="' + (on ? 1 : 0.55) + '"/>';
+    }
+    return s + '</g>';
   };
 
   // グラウンド図。uid=1画面に複数置くときのid衝突よけ / inner=図の上に重ねる要素
@@ -353,7 +447,7 @@ const F = (() => {
     return s;
   };
 
-  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, dist, inFair, pathD, lerpPath, ballPathD, lerpBall, playerSVG, runnerSVG, fieldSVG };
+  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, ROLE_POS, dist, inFair, pathD, lerpPath, lerpPathWait, ballPathD, lerpBall, playerSVG, runnerSVG, coachSVG, outsSVG, fieldSVG };
 })();
 if (typeof module !== "undefined") module.exports = F;
 
@@ -365,6 +459,64 @@ if (typeof module !== "undefined") module.exports = F;
 // ここが「正解の決め方」の唯一の場所。UIは判定を自分で書かない。
 const E = (() => {
   const POSN = F.POSN; // 守備位置の並びは field.js の定義を唯一の正とする
+
+  // ==== せめるモード（攻撃側）====
+  // 役割の並び（表示・出題の基準順）。B=バッター / R1〜R3=塁のランナー / coach1・coach3=コーチャー
+  const ROLEN = ["B", "R1", "R2", "R3", "coach1", "coach3"];
+  const ROLE_JA = { B: "バッター", R1: "一るいランナー", R2: "二るいランナー", R3: "三るいランナー", coach1: "一るいコーチャー", coach3: "三るいコーチャー" };
+  const RUNNERN = ["B", "R1", "R2", "R3"];
+  // 正解発表の札に出す言葉（正誤には使わん＝正誤は場所だけで決める）
+  const DECISIONS = ["すすむ", "とまる", "もどる", "ハーフウェイ", "タッチアップ", "かけぬける", "回る"];
+  const BASE_OF = { B: F.BASES.home, R1: F.BASES.first, R2: F.BASES.second, R3: F.BASES.third };
+  const isCoach = (role) => role === "coach1" || role === "coach3";
+
+  const attackRoles = (sc) => sc.attack ? ROLEN.filter((r) => !!sc.attack[r]) : [];
+  const attackScenes = (scs, role) => scs.filter((sc) => attackRoles(sc).indexOf(role) >= 0);
+  // その役割が答える走者の並び。走者役＝自分だけ / コーチャー＝見る走者（watchに書いた順）
+  const attackQuestions = (sc, role) => isCoach(role) ? sc.attack[role].watch.slice() : [role];
+  // 答え＝ ask:"catch"（捕られる瞬間どこ？）なら path[wait] / ask:"dest"（どこまで行く？）なら最後の点
+  const runnerAnswer = (sc, rid) => {
+    const m = sc.attack[rid];
+    return sc.attack.ask === "catch" ? m.path[m.wait] : m.path[m.path.length - 1];
+  };
+  const judgeRunner = (sc, rid, tap) => {
+    const answer = runnerAnswer(sc, rid);
+    const d = F.dist(tap, answer);
+    const tol = (sc.quiz && sc.quiz.tolerance) || 12;
+    return { correct: d <= tol, dist: d, answer: answer };
+  };
+
+  // 攻撃データのリント（場面を足した時の壊れを機械で見つける）
+  const lintAttack = (sc, at) => {
+    const a = sc.attack;
+    if (!a || typeof a !== "object") { at("attackがオブジェクトでない"); return; }
+    if (["きほん", "おうよう"].indexOf(a.level) < 0) at("attack.levelが無い/変な値（きほん か おうよう）");
+    if (["dest", "catch"].indexOf(a.ask) < 0) at("attack.askが無い/変な値（dest=どこまで行く？ / catch=捕られる瞬間どこ？）");
+    Object.keys(a).forEach((k) => { if (k !== "level" && k !== "ask" && ROLEN.indexOf(k) < 0) at("attackに知らないキー " + k); });
+    if (!a.B) at("attack.B（バッター）が無い");
+    const want = ((sc.situation && sc.situation.runners) || []).map((b) => "R" + b);
+    want.forEach((r) => { if (!a[r]) at("attack." + r + " が無い（situation.runnersに居る）"); });
+    ["R1", "R2", "R3"].forEach((r) => { if (a[r] && want.indexOf(r) < 0) at("attack." + r + " が居るが situation.runners に無い"); });
+    RUNNERN.forEach((r) => {
+      const m = a[r]; if (!m) return;
+      if (!Array.isArray(m.path) || m.path.length < 1) { at("attack." + r + " のpathが1点以上ない"); return; }
+      m.path.forEach((pt) => {
+        if (!Array.isArray(pt) || pt.length !== 2) at("attack." + r + " の座標の形が変 " + JSON.stringify(pt));
+        else if (pt[0] < 0 || pt[0] > 100 || pt[1] < 0 || pt[1] > 100) at("attack." + r + " の座標が場外 " + pt);
+      });
+      if (Array.isArray(m.path[0]) && m.path[0].length === 2 && F.dist(m.path[0], BASE_OF[r]) > 0.01) at("attack." + r + " の出発点が自分の塁の上でない");
+      if (DECISIONS.indexOf(m.decision) < 0) at("attack." + r + " のdecisionが無い/変な値（" + DECISIONS.join("/") + "）");
+      if (!m.why) at("attack." + r + " のwhyが無い");
+      if (m.wait !== undefined && !(Number.isInteger(m.wait) && m.wait >= 0 && m.wait < m.path.length)) at("attack." + r + " のwaitが範囲外");
+      if (a.ask === "catch" && m.wait === undefined) at("attack." + r + " にwaitが無い（catchの場面は走者全員に必須）");
+    });
+    ["coach1", "coach3"].forEach((c) => {
+      const m = a[c]; if (!m) return;
+      if (!Array.isArray(m.watch) || m.watch.length < 1 || m.watch.length > 2) at("attack." + c + " のwatchは1〜2人");
+      else m.watch.forEach((w) => { if (RUNNERN.indexOf(w) < 0 || !a[w]) at("attack." + c + " のwatch " + w + " はこの場面に居ない"); });
+      if (!m.why) at("attack." + c + " のwhyが無い");
+    });
+  };
 
   // その場面でそのポジションが「最後に居るべき場所」＝正解
   // path が空＝「そのまま」なので定位置が正解になる
@@ -421,6 +573,7 @@ const E = (() => {
           });
         });
       }
+      if (sc.attack !== undefined) lintAttack(sc, at);
     });
     return errs;
   };
@@ -439,7 +592,7 @@ const E = (() => {
 
   const newProgress = () => {
     const cleared = {};
-    POSN.forEach((p) => { cleared[p] = []; });
+    POSN.concat(ROLEN).forEach((p) => { cleared[p] = []; });
     return { cleared: cleared, total: { asked: 0, correct: 0 } };
   };
 
@@ -459,7 +612,7 @@ const E = (() => {
   const normalizeProgress = (raw) => {
     const base = newProgress();
     if (!raw || typeof raw !== "object") return base;
-    POSN.forEach((p) => {
+    POSN.concat(ROLEN).forEach((p) => {
       if (raw.cleared && Array.isArray(raw.cleared[p])) base.cleared[p] = raw.cleared[p].slice();
     });
     if (raw.total && typeof raw.total.asked === "number") base.total.asked = raw.total.asked;
@@ -467,7 +620,8 @@ const E = (() => {
     return base;
   };
 
-  return { POSN, answerOf, judge, lint, pickQuiz, newProgress, applyResult, normalizeProgress };
+  return { POSN, ROLEN, ROLE_JA, RUNNERN, DECISIONS, isCoach, answerOf, judge, lint, pickQuiz, newProgress, applyResult, normalizeProgress,
+           attackRoles, attackScenes, attackQuestions, runnerAnswer, judgeRunner };
 })();
 if (typeof module !== "undefined") module.exports = E;
 
@@ -501,6 +655,12 @@ if (typeof module !== "undefined") module.exports = E;
 //   id "R1" = 一塁ランナー / "R2" = 二塁ランナー / "R3" = 三塁ランナー（図では「走」）
 //   path は通る塁を順に並べる。フライで戻る時は「リード→もどる」で往復に書く。
 //   ※フライがつかまる場面は打者がアウトなので "B" は入れない。
+//
+// 【attack＝せめるモード（攻撃側）の正しい動き】※runs（守備が備える相手の動き）とは別物。食い違ってよい
+//   level: "きほん"/"おうよう"   ask: "dest"（ゴロ・ヒット＝どこまで行く？）/ "catch"（捕られるフライ・ライナー＝捕られる瞬間どこ？）
+//   B / R1 / R2 / R3 = { path:[通る点…], decision:"すすむ|とまる|もどる|ハーフウェイ|タッチアップ|かけぬける|回る", wait:着地の瞬間に居る点のindex, why:"ひとこと" }
+//     答え＝ dest なら path の最後の点 / catch なら path[wait]。catch の場面は走者全員に wait が要る
+//   coach1 / coach3 = { watch:["見る走者"…最大2人], why:"何を見て、何と声を出すか" }
 
 var PT = {
   // 塁とマウンド
@@ -517,7 +677,14 @@ var PT = {
   左から三塁: [23, 55],      // 外野手が三塁のバックアップに入る所
   中から二塁: [50, 33],      // 外野手が二塁のバックアップに入る所
   // 打球の落ちる所
-  レフト前: [31, 43], センター前: [50, 35], ライト前: [69, 43]
+  レフト前: [31, 43], センター前: [50, 35], ライト前: [69, 43],
+  // せめるモード（攻撃側）でよく使う場所
+  一二間ハーフ: [61.25, 51.25],  // 一るいと二るいのまん中（ハーフウェイ）
+  二三間ハーフ: [38.75, 51.25],  // 二るいと三るいのまん中
+  三本間ハーフ: [38.75, 73.75],  // 三るいとホームのまん中
+  一塁かけぬけ: [79, 57],        // 一るいをかけぬけてファウル側へ抜けた所（一るいから約8＝一るいをタップしても正解）
+  一塁回り: [68, 57],            // 一るいを回って様子を見る所（内野側）
+  三塁リード: [33, 68]           // 三るいランナーのリード（タッチアップの前）
 };
 
 var SCENARIOS = [
@@ -541,6 +708,13 @@ var SCENARIOS = [
       "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "三るいベースにもどって、そこから先へ進ませない" },
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "二るいへの送球がそれたら、打者は三るいをねらう。三るいの後ろで待つ" },
       C:    { path: [],                   role: "そのまま",     why: "ホームベースを守りながら、送球のゆくえを見る" }
+    },
+    attack: {
+      level: "きほん", ask: "dest",
+      B: { path: [PT.ホーム, PT.一塁, PT.一塁回り, PT.一塁], decision: "回る",
+           why: "一るいを全力でかけぬけて少し回る。レフトがそらしたら二るいへ。ふつうは一るいにもどる" },
+      coach1: { watch: ["B"],
+           why: "レフトがボールを取ったかを見て、「止まれ！」か「回れ！」を大きな声と手で伝える" }
     },
     quiz: { tolerance: 12 }
   },
@@ -588,6 +762,13 @@ var SCENARIOS = [
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "送球がそれたら、打者は三るいをねらう。三るいの後ろで待つ" },
       C:    { path: [],                   role: "そのまま",     why: "ホームベースを守りながら、送球のゆくえを見る" }
     },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "ライトは一るいに近い。二るいはねらわず、全力でかけぬける" },
+      coach1: { watch: ["B"],
+            why: "ライトが前で取ったら「止まれ！」。かけぬけたらすぐ一るいにもどらせる" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -610,6 +791,13 @@ var SCENARIOS = [
       RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
       CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいの方へ動いて、送球がそれた時にそなえる" },
       LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "ゴロは打球を見ない。取られる前に着けるかの勝負なので、一るいへ全力" },
+      coach1: { watch: ["B"],
+            why: "「走れ！」とだけ言う。打球を見させたら足がおそくなる" }
     },
     quiz: { tolerance: 12 }
   },
@@ -654,6 +842,13 @@ var SCENARIOS = [
       RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
       CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいの方へ動いて、送球がそれた時にそなえる" },
       LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "アウトになりそうでも、あきらめない。送球がそれることもある" },
+      coach1: { watch: ["B"],
+            why: "「走れ！」。最後まで全力で走らせる" }
     },
     quiz: { tolerance: 12 }
   },
@@ -704,6 +899,15 @@ var SCENARIOS = [
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "三るいへの送球がそれた時のために、三るいの後ろへ回る" },
       C:    { path: [],                   role: "そのまま",     why: "ホームを守って、ランナーが帰ってこないか見る" }
     },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁回り, PT.一塁], decision: "回る",
+            why: "一るいをかけぬけて少し回り、レフトがそらしたら二るいへ。ふつうは一るいにもどる" },
+      R1: { path: [PT.一塁, PT.二塁], decision: "すすむ",
+            why: "レフト前はレフトが三るいに近い。二るいで止まる" },
+      coach3: { watch: ["R1"],
+            why: "レフトが早く取ったら「ストップ！」。三るいへ回すのは、そらした時だけ。迷ったら止める" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -728,6 +932,17 @@ var SCENARIOS = [
       "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "打者が一るいに来るので、ベースに入る" },
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "三るいへの送球がそれた時のために、三るいの後ろへ回る" },
       C:    { path: [],                   role: "そのまま",     why: "ホームを守って、ランナーが帰ってこないか見る" }
+    },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁回り, PT.一塁], decision: "回る",
+            why: "一るいをかけぬけて少し回る。ライトが後ろへそらしたら二るいへ" },
+      R1: { path: [PT.一塁, PT.二塁, PT.三塁], decision: "すすむ",
+            why: "ライトは三るいから遠い。コーチャーを見ながら三るいまで行く" },
+      coach3: { watch: ["R1"],
+            why: "ライトの肩とランナーの速さを見て「ゴー！」。迷ったら二るいで止める" },
+      coach1: { watch: ["B"],
+            why: "「回れ！」。ライトが取ったら一るいにもどらせる" }
     },
     quiz: { tolerance: 12 }
   },
@@ -755,6 +970,15 @@ var SCENARIOS = [
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "三るいへの送球がそれた時のために、三るいの後ろへ回る" },
       C:    { path: [],                   role: "そのまま",     why: "ホームを守って、ランナーが帰ってこないか見る" }
     },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.二塁], decision: "すすむ",
+            why: "長打なので二るいまで。先のランナーが止まったら、それ以上は行かない" },
+      R1: { path: [PT.一塁, PT.二塁, PT.三塁], decision: "すすむ",
+            why: "ノーアウトなので欲張らない。三るいで止まれば「1アウト三るい」が作れて点が入りやすい" },
+      coach3: { watch: ["R1"],
+            why: "ノーアウトなら三るいで「ストップ！」。むりにホームへ回して取られるより、三るいに残す方がいい" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -779,6 +1003,15 @@ var SCENARIOS = [
       RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
       CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいへの送球がそれた時のために、後ろに回る" },
       LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "ゲッツーをふせぐには、一るいへ全力で走るしかない。あきらめない" },
+      R1: { path: [PT.一塁, PT.二塁], decision: "すすむ",
+            why: "ふまれたらアウトなので二るいへ全力。まっすぐベースへすべりこんで、送球をおくらせる" },
+      coach1: { watch: ["B"],
+            why: "「走れ！」。ゲッツーになるかは打者の足しだい" }
     },
     quiz: { tolerance: 12 }
   },
@@ -806,6 +1039,15 @@ var SCENARIOS = [
       CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいへの送球がそれた時のために、後ろに回る" },
       LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
     },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "バントしたらすぐ走る。ころがしたあと、バットを見とったらまにあわない" },
+      R1: { path: [PT.一塁, PT.二塁], decision: "すすむ",
+            why: "ころがったのを見てから二るいへ。とび上がったフライだったら一るいにもどる" },
+      coach1: { watch: ["B"],
+            why: "「走れ！」。バントが上がった時だけ「もどれ！」" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -831,6 +1073,15 @@ var SCENARIOS = [
       "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "打者が三るいまで来ないように、ベースに入る" },
       "2B": { path: [PT.二, PT.二塁],     role: "ベースカバー", why: "打者が二るいをねらうので、二るいベースに入る" },
       "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "打者が一るいに来るので、ベースに入る" }
+    },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁回り, PT.一塁], decision: "回る",
+            why: "一るいをかけぬけて少し回る。ふつうは一るいにもどる" },
+      R2: { path: [PT.二塁, PT.三塁], decision: "すすむ",
+            why: "レフトはホームに近いので、ホームはねらわない。三るいで止まる" },
+      coach3: { watch: ["R2"],
+            why: "「ストップ！」。レフト前でホームをねらうと、たいていアウトになる" }
     },
     quiz: { tolerance: 12 }
   },
@@ -883,6 +1134,15 @@ var SCENARIOS = [
       C:    { path: [],                   role: "待つ",         why: "ホームで送球を受けて、ランナーにタッチする" },
       P:    { path: [PT.投, PT.ホーム後ろ], role: "バックアップ", why: "ホームへの送球がそれた時のために、ホームの後ろへ回る" }
     },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁回り, PT.一塁], decision: "回る",
+            why: "一るいをかけぬけて少し回る。ふつうは一るいにもどる" },
+      R2: { path: [PT.二塁, PT.三塁, PT.ホーム], decision: "すすむ",
+            why: "ライトはホームから一番遠い。コーチャーの合図を見ながらホームまで走る" },
+      coach3: { watch: ["R2"],
+            why: "ライトの返球を見て「ゴー！ゴー！」。遠いので回せる場面が多い" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -908,6 +1168,17 @@ var SCENARIOS = [
       "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "ランナーがもどるので、一るいベースに入る" },
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "三るいへの送球がそれた時のために、後ろへ回る" },
       C:    { path: [],                   role: "そのまま",     why: "ホームを守って、全体に声をかける" }
+    },
+    attack: {
+      level: "おうよう", ask: "catch",
+      B:  { path: [PT.ホーム, PT.一塁], wait: 1, decision: "かけぬける",
+            why: "フライでも落ちるかもしれない。全力で一るいへ走る" },
+      R2: { path: [PT.二塁, PT.二三間ハーフ, PT.二塁], wait: 1, decision: "ハーフウェイ",
+            why: "あさいフライはハーフウェイで見る。取られたら二るいにもどる。落ちたら三るいへ" },
+      R1: { path: [PT.一塁, PT.一二間ハーフ, PT.一塁], wait: 1, decision: "ハーフウェイ",
+            why: "取られたら一るいにもどる。落ちたら二るいへ" },
+      coach3: { watch: ["R2", "R1"],
+            why: "二るいランナーに「ハーフウェイ！」、取られたら「もどれ！」。一るいランナーも同じ。2人を同時に見る" }
     },
     quiz: { tolerance: 12 }
   },
@@ -961,6 +1232,19 @@ var SCENARIOS = [
       C:    { path: [],                   role: "待つ",         why: "ホームで送球を受けて、帰ってきたランナーにタッチする" },
       P:    { path: [PT.投, PT.ホーム後ろ], role: "バックアップ", why: "ホームへの送球がそれた時のために、ホームの後ろへ回る" }
     },
+    attack: {
+      level: "おうよう", ask: "catch",
+      B:  { path: [PT.ホーム, PT.一塁], wait: 1, decision: "かけぬける",
+            why: "フライでも落ちるかもしれない。全力で一るいへ走る" },
+      R3: { path: [PT.三塁, PT.三塁リード, PT.三塁], wait: 2, decision: "もどる",
+            why: "あさいフライではホームをねらわない。三るいにもどって、次の打者を待つ" },
+      R2: { path: [PT.二塁, PT.二三間ハーフ, PT.二塁], wait: 1, decision: "ハーフウェイ",
+            why: "取られたら二るいにもどる。落ちたら三るいへ" },
+      R1: { path: [PT.一塁, PT.一二間ハーフ, PT.一塁], wait: 1, decision: "ハーフウェイ",
+            why: "取られたら一るいにもどる。落ちたら二るいへ" },
+      coach3: { watch: ["R3", "R2"],
+            why: "あさいので三るいランナーには「もどれ！」。二るいランナーは「ハーフウェイ！」。2人を同時に見る" }
+    },
     quiz: { tolerance: 12 }
   },
 
@@ -983,6 +1267,13 @@ var SCENARIOS = [
       LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいへの送球がそれた時のために、後ろに回る" },
       P:    { path: [PT.投, PT.三塁後ろ], role: "バックアップ", why: "三るいへの送球がそれた時のために、三るいの後ろへ回る" },
       C:    { path: [],                   role: "そのまま",     why: "ホームを守って、ランナーが帰ってこないか見る" }
+    },
+    attack: {
+      level: "きほん", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.二塁], decision: "すすむ",
+            why: "ライト線をやぶったら二るいまで。一るいを回る時に三るいコーチャーを見る" },
+      coach3: { watch: ["B"],
+            why: "三るいまで回すかはライトの返球しだい。迷ったら二るいで「ストップ！」" }
     },
     quiz: { tolerance: 12 }
   },
@@ -1010,6 +1301,195 @@ var SCENARIOS = [
       "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "打者が三るいまで来ないように、ベースに入る" },
       "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "一るいベースに入る" }
     },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.二塁], decision: "すすむ",
+            why: "長打なので二るいまで。先のランナーの走り方を見ながら回る" },
+      R1: { path: [PT.一塁, PT.二塁, PT.三塁, PT.ホーム], decision: "すすむ",
+            why: "レフトの頭をこえたらホームまで。二るいを回る時にコーチャーを見る" },
+      coach3: { watch: ["R1"],
+            why: "「ゴー！ゴー！」と回す。返球が早い時だけ三るいで止める" }
+    },
+    quiz: { tolerance: 12 }
+  },
+
+  // ============================================================
+  // 21 ランナー1るい・ショートライナー（せめるモードで足した場面）
+  //   ★おぼえどころ: ライナーはまず「もどる」。とび出しとったらゲッツーになる
+  // ============================================================
+  {
+    id: "S21", traj: "liner", title: "ランナー1るい・ショートライナー", level: "おうよう",
+    situation: { runners: ["1"], outs: 0, play: "ショートライナー" },
+    ball: [PT.ホーム, [42, 55]],
+    runs: [
+      { id: "R1", path: [PT.一塁, [66, 55], PT.一塁] },
+      { id: "B",  path: [PT.ホーム, PT.一塁] }
+    ],
+    moves: {
+      SS:   { path: [PT.遊, [42, 55]],    role: "ボール",       why: "ライナーを取って、すぐ一るいへ投げてゲッツーをねらう" },
+      "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "ランナーがもどる前に送球を受けるため、ベースに入る" },
+      "2B": { path: [PT.二, PT.二塁],     role: "ベースカバー", why: "ランナーが二るいへ来た時のために、ベースに入る" },
+      "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "三るいベースにもどる" },
+      P:    { path: [],                   role: "そのまま",     why: "ライナーは動かず見る。そらしたら追いかける" },
+      C:    { path: [],                   role: "そのまま",     why: "ホームを守って、送球のゆくえを見る" },
+      RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
+      CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいへの送球にそなえて、後ろに回る" },
+      LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "きほん", ask: "catch",
+      B:  { path: [PT.ホーム, PT.一塁], wait: 1, decision: "かけぬける",
+            why: "ライナーでも落ちるかもしれない。全力で一るいへ走る" },
+      R1: { path: [PT.一塁, [66, 55], PT.一塁], wait: 2, decision: "もどる",
+            why: "ライナーはまず一るいにもどる。とび出しとったら、投げられてゲッツーになる" },
+      coach1: { watch: ["R1"],
+            why: "「もどれ！」とすぐ言う。ライナーは取られることが多い" }
+    },
+    quiz: { tolerance: 12 }
+  },
+
+  // ============================================================
+  // 22 ランナー3るい・ピッチャーゴロ（せめるモードで足した場面）
+  //   ★おぼえどころ: ピッチャーゴロだけは「止まる」。ピッチャーはホームに一番近い
+  // ============================================================
+  {
+    id: "S22", traj: "grounder", title: "ランナー3るい・ピッチャーゴロ", level: "おうよう",
+    situation: { runners: ["3"], outs: 0, play: "ピッチャーゴロ" },
+    ball: [PT.ホーム, [50, 71]],
+    runs: [
+      { id: "R3", path: [PT.三塁, PT.三塁リード, PT.三塁] },
+      { id: "B",  path: [PT.ホーム, PT.一塁] }
+    ],
+    moves: {
+      P:    { path: [PT.投, [50, 71]],    role: "ボール",       why: "取ったらまず三るいランナーを見る。もどったら一るいへ投げる" },
+      C:    { path: [],                   role: "待つ",         why: "★どこへ投げるか声で教える。ランナーが来たらホームで受けてタッチする" },
+      "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "打者が一るいに来るので、ベースに入る" },
+      "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "三るいベースに入って、ランナーをもどらせる" },
+      SS:   { path: [PT.遊, PT.二塁],     role: "ベースカバー", why: "二るいベースに入る" },
+      "2B": { path: [],                   role: "そのまま",     why: "一るい側を見ながら守る" },
+      RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
+      CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいの後ろへ動いて、送球にそなえる" },
+      LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球にそなえる" }
+    },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "一るいへ全力。ピッチャーが三るいランナーを見とる間に、間にあうことがある" },
+      R3: { path: [PT.三塁, PT.三塁リード, PT.三塁], decision: "とまる",
+            why: "ピッチャーゴロだけは止まる。ピッチャーはホームに一番近いので、走ったらアウトになる" },
+      coach3: { watch: ["R3"],
+            why: "「ストップ！」。ピッチャーゴロで走らせてはいけん" }
+    },
+    quiz: { tolerance: 12 }
+  },
+
+  // ============================================================
+  // 23 ランナー3るい・ふかいレフトフライ（せめるモードで足した場面）
+  //   ★おぼえどころ: ふかいフライは「タッチアップ」。取られたしゅんかんに走り出す
+  // ============================================================
+  {
+    id: "S23", traj: "fly", title: "ランナー3るい・ふかいレフトフライ", level: "おうよう",
+    situation: { runners: ["3"], outs: 1, play: "ふかいレフトフライ" },
+    ball: [PT.ホーム, [25, 30]],
+    runs: [
+      { id: "R3", path: [PT.三塁, PT.三塁リード, PT.三塁, PT.ホーム] }
+    ],
+    moves: {
+      LF:   { path: [PT.左, [25, 30]],    role: "ボール",       why: "取ったらすぐホームへ投げる。取る前に体を前へ動かしておく" },
+      SS:   { path: [PT.遊, [35, 55]],    role: "ちゅうけい",   why: "レフトとホームの間に入って、送球をちゅうけいする" },
+      C:    { path: [],                   role: "待つ",         why: "ホームで送球を受けて、走ってきたランナーにタッチする" },
+      P:    { path: [PT.投, PT.ホーム後ろ], role: "バックアップ", why: "ホームへの送球がそれた時のために、ホームの後ろへ回る" },
+      "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "三るいベースに入って、ランナーがもどるのを見る" },
+      "2B": { path: [PT.二, PT.二塁],     role: "ベースカバー", why: "二るいベースに入る" },
+      "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "一るいベースに入る" },
+      CF:   { path: [PT.中, [30, 24]],    role: "バックアップ", why: "レフトの後ろに回って、落とした時にそなえる" },
+      RF:   { path: [PT.右, [58, 36]],    role: "バックアップ", why: "内野の方へつめて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "おうよう", ask: "catch",
+      B:  { path: [PT.ホーム, PT.一塁], wait: 1, decision: "かけぬける",
+            why: "フライでも落ちるかもしれない。全力で一るいへ走る" },
+      R3: { path: [PT.三塁, PT.三塁リード, PT.三塁, PT.ホーム], wait: 2, decision: "タッチアップ",
+            why: "ふかいフライは三るいにもどって待つ。取られたしゅんかんに走り出せば、ホームまで行ける" },
+      coach3: { watch: ["R3"],
+            why: "まず「もどれ！」。取ったしゅんかんに「ゴー！」を出す。早く出るとアウトになる" }
+    },
+    quiz: { tolerance: 12 }
+  },
+
+  // ============================================================
+  // 24 ランナー2るい・三遊間ゴロ（せめるモードで足した場面）
+  //   ★おぼえどころ: 自分の前（三るい側）へ行ったゴロは「止まる」
+  // ============================================================
+  {
+    id: "S24", traj: "grounder", title: "ランナー2るい・三遊間ゴロ", level: "おうよう",
+    situation: { runners: ["2"], outs: 0, play: "三遊間ゴロ" },
+    ball: [PT.ホーム, [37, 58]],
+    runs: [
+      { id: "R2", path: [PT.二塁, [44, 48], PT.二塁] },
+      { id: "B",  path: [PT.ホーム, PT.一塁] }
+    ],
+    moves: {
+      SS:   { path: [PT.遊, [37, 58]],    role: "ボール",       why: "取ったらランナーを目で止めてから、一るいへ投げる" },
+      "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "ランナーが来た時のために、三るいベースに入る" },
+      "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "打者が一るいに来るので、ベースに入る" },
+      "2B": { path: [PT.二, PT.二塁],     role: "ベースカバー", why: "ランナーがもどるので、二るいベースに入る" },
+      P:    { path: [PT.投, PT.投から一塁], role: "カバー",     why: "内野ゴロはかならず一るいへ走る" },
+      C:    { path: [],                   role: "そのまま",     why: "ホームを守りながら、どこへ投げるか声で教える" },
+      RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
+      CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいへの送球がそれた時のために、後ろに回る" },
+      LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "一るいへ全力。ショートが深い所で取ったら、間にあうことがある" },
+      R2: { path: [PT.二塁, [44, 48], PT.二塁], decision: "とまる",
+            why: "自分の前（三るい側）へ行ったゴロは止まる。走ったら三るいでタッチされる" },
+      coach3: { watch: ["R2"],
+            why: "「ストップ！」。自分より三るい側の打球では走らせん" }
+    },
+    quiz: { tolerance: 12 }
+  },
+
+  // ============================================================
+  // 25 まんるい・セカンドゴロ（2アウト）（せめるモードで足した場面）
+  //   ★おぼえどころ: るいが埋まっとって2アウトなら「打ったらゴー」。走るしかない
+  // ============================================================
+  {
+    id: "S25", traj: "grounder", title: "まんるい・セカンドゴロ（2アウト）", level: "おうよう",
+    situation: { runners: ["1", "2", "3"], outs: 2, play: "セカンドゴロ" },
+    ball: [PT.ホーム, [60, 56]],
+    runs: [
+      { id: "R3", path: [PT.三塁, PT.ホーム] },
+      { id: "R2", path: [PT.二塁, PT.三塁] },
+      { id: "R1", path: [PT.一塁, PT.二塁] },
+      { id: "B",  path: [PT.ホーム, PT.一塁] }
+    ],
+    moves: {
+      "2B": { path: [PT.二, [60, 56]],    role: "ボール",       why: "取ったら一番近いるいへ投げる。2アウトなのでどこでもアウトにできる" },
+      "1B": { path: [PT.一, PT.一塁],     role: "ベースカバー", why: "打者が一るいに来るので、ベースに入って送球を受ける" },
+      SS:   { path: [PT.遊, PT.二塁],     role: "ベースカバー", why: "ランナーが来るので、二るいベースに入る" },
+      "3B": { path: [PT.三, PT.三塁],     role: "ベースカバー", why: "ランナーが来るので、三るいベースに入る" },
+      C:    { path: [],                   role: "待つ",         why: "ホームで送球を受けてベースをふむ。まんるいはホームでもアウトにできる" },
+      P:    { path: [PT.投, PT.投から一塁], role: "カバー",     why: "内野ゴロはかならず一るいへ走る" },
+      RF:   { path: [PT.右, PT.一塁後ろ], role: "バックアップ", why: "一るいへの送球がそれた時のために、後ろに回る" },
+      CF:   { path: [PT.中, PT.中から二塁], role: "バックアップ", why: "二るいへの送球がそれた時のために、後ろに回る" },
+      LF:   { path: [PT.左, PT.左から三塁], role: "バックアップ", why: "三るいの方へ動いて、送球がそれた時にそなえる" }
+    },
+    attack: {
+      level: "おうよう", ask: "dest",
+      B:  { path: [PT.ホーム, PT.一塁, PT.一塁かけぬけ], decision: "かけぬける",
+            why: "2アウトなので打ったらゴー。一るいへ全力でかけぬける" },
+      R3: { path: [PT.三塁, PT.ホーム], decision: "すすむ",
+            why: "るいが埋まっとるので、打ったらゴー。まよわずホームへ走る" },
+      R2: { path: [PT.二塁, PT.三塁], decision: "すすむ",
+            why: "後ろからランナーが来るので、止まれない。打ったらゴー" },
+      R1: { path: [PT.一塁, PT.二塁], decision: "すすむ",
+            why: "ふまれたらアウトなので、打球を見んで二るいへ全力" },
+      coach3: { watch: ["R3", "R2"],
+            why: "「ゴー！ゴー！」。2アウトでまんるいは、みんな走るしかない" }
+    },
     quiz: { tolerance: 12 }
   }
 
@@ -1020,7 +1500,11 @@ if (typeof module !== "undefined") module.exports = SCENARIOS;
 <script>
 // ==== 状態 ====
 var KEY = "yakyu_drill_v1";
-var App = { pos: null, screen: "home", sc: null, progress: E.newProgress() };
+var App = { mode: "defense", pos: null, arole: null, screen: "home", sc: null, progress: E.newProgress() };
+function isAttack() { return App.mode === "attack"; }
+function meRole() { return isAttack() ? App.arole : App.pos; }       // いま選んどる「自分」
+function meName() { return isAttack() ? E.ROLE_JA[App.arole] : F.POS_NUM[App.pos] + " " + F.POS_JA[App.pos]; }
+function myScenes() { return isAttack() ? E.attackScenes(SCENARIOS, App.arole) : SCENARIOS; }
 
 function load() {
   try {
@@ -1028,11 +1512,13 @@ function load() {
     if (!raw) return;
     var d = JSON.parse(raw);
     if (d && typeof d.pos === "string" && F.POS[d.pos]) App.pos = d.pos;
+    if (d && (d.mode === "attack" || d.mode === "defense")) App.mode = d.mode;
+    if (d && typeof d.arole === "string" && E.ROLEN.indexOf(d.arole) >= 0) App.arole = d.arole;
     App.progress = E.normalizeProgress(d && d.progress);
   } catch (e) { /* 壊れていても既定のまま動かす */ }
 }
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify({ pos: App.pos, progress: App.progress })); }
+  try { localStorage.setItem(KEY, JSON.stringify({ pos: App.pos, mode: App.mode, arole: App.arole, progress: App.progress })); }
   catch (e) { toast("記ろくがほぞんできませんでした"); }
 }
 var toastTimer = null;
@@ -1048,56 +1534,78 @@ function $(id) { return document.getElementById(id); }
 function sitText(sc) {
   var r = sc.situation.runners;
   var run = r.length ? "ランナー " + r.map(function (x) { return x + "るい"; }).join("・") : "ランナーなし";
-  var o = sc.situation.outs;
-  return run + "・" + (o === 0 ? "ノーアウト" : o + "アウト") + "・" + sc.situation.play;
+  // アウトカウントは文章に書かず、グラウンド右上のランプ（F.outsSVG）で見せる
+  return run + "・" + sc.situation.play;
 }
 
 // ==== ホーム画面 ====
+var GOLD = { fill: "#ffd75e", stroke: "#3d2c05", ink: "#3d2c05" };
+function roleSVG(role, xy, o) { return E.isCoach(role) ? F.coachSVG(role, xy, o) : F.runnerSVG(role, xy, o); }
 function renderHome() {
+  $("tabDefense").classList.toggle("on", !isAttack());
+  $("tabAttack").classList.toggle("on", isAttack());
+  $("homeLead").textContent = isAttack() ? "自分の役目をえらぼう" : "自分のポジションをえらぼう";
   var inner = "";
-  F.POSN.forEach(function (p) {
-    var mine = p === App.pos;
-    inner += F.playerSVG(p, null, mine
-      ? { r: 5.2, fill: "#ffd75e", stroke: "#3d2c05", sw: 1.1, ink: "#3d2c05", cls: "pick", tap: true, halo: true }
-      : { r: 4.2, fill: "#ffffff", stroke: "#1c2a24", sw: 0.8, cls: "pick dim", tap: true });
-  });
+  if (isAttack()) {
+    E.ROLEN.forEach(function (r) {
+      var mine = r === App.arole;
+      inner += roleSVG(r, F.ROLE_POS[r], mine
+        ? { r: 5.2, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink, cls: "pick", tap: true, halo: true }
+        : { cls: "pick dim", tap: true });
+    });
+  } else {
+    F.POSN.forEach(function (p) {
+      var mine = p === App.pos;
+      inner += F.playerSVG(p, null, mine
+        ? { r: 5.2, fill: "#ffd75e", stroke: "#3d2c05", sw: 1.1, ink: "#3d2c05", cls: "pick", tap: true, halo: true }
+        : { r: 4.2, fill: "#ffffff", stroke: "#1c2a24", sw: 0.8, cls: "pick dim", tap: true });
+    });
+  }
   $("homeField").innerHTML = F.fieldSVG("home", inner);
 
-  if (App.pos) {
-    $("posName").innerHTML = '<span class="num">' + F.POS_NUM[App.pos] + "</span>" + F.POS_JA[App.pos];
-    var done = App.progress.cleared[App.pos].length;
-    var all = SCENARIOS.length;
+  var me = meRole();
+  if (me) {
+    $("posName").innerHTML = isAttack() ? E.ROLE_JA[me]
+      : '<span class="num">' + F.POS_NUM[me] + "</span>" + F.POS_JA[me];
+    var done = App.progress.cleared[me].length;
+    var all = myScenes().length;
     $("posBar").style.width = (all ? Math.round(done / all * 100) : 0) + "%";
     $("posProg").textContent = "クイズ正かい " + done + " / " + all + " 場面";
   } else {
-    $("posName").textContent = "▲ グラウンドのせんしゅをタップ";
+    $("posName").textContent = isAttack() ? "▲ グラウンドの人をタップ" : "▲ グラウンドのせんしゅをタップ";
     $("posBar").style.width = "0%";
     $("posProg").textContent = "";
   }
-  $("btnZukan").disabled = !App.pos;
-  $("btnQuiz").disabled = !App.pos;
+  $("btnZukan").disabled = !me;
+  $("btnQuiz").disabled = !me;
 }
 document.getElementById("homeField").addEventListener("click", function (ev) {
-  var g = ev.target.closest ? ev.target.closest(".actor") : null;
+  var g = ev.target.closest ? ev.target.closest(".actor, .runner, .coach") : null;
   if (!g) return;
-  App.pos = g.getAttribute("data-pos");
+  if (isAttack()) App.arole = g.getAttribute("data-run") || g.getAttribute("data-role");
+  else App.pos = g.getAttribute("data-pos");
   save(); renderHome();
 });
+$("tabDefense").onclick = function () { App.mode = "defense"; save(); renderHome(); };
+$("tabAttack").onclick = function () { App.mode = "attack"; save(); renderHome(); };
 
 // ==== ずかん: 一覧 ====
 function renderList() {
   $("listLead").innerHTML = '<span class="num" style="background:#ffd75e;color:#3d2c05;border-radius:999px;padding:2px 10px;font-weight:800">'
-    + F.POS_NUM[App.pos] + " " + F.POS_JA[App.pos] + "</span> で見る場面";
+    + meName() + "</span> で見る場面";
+  var me = meRole();
   var lv = {}, order = [];
-  SCENARIOS.forEach(function (sc) {
-    if (!lv[sc.level]) { lv[sc.level] = []; order.push(sc.level); }
-    lv[sc.level].push(sc);
+  myScenes().forEach(function (sc) {
+    var name = isAttack() ? sc.attack.level : sc.level;
+    if (!lv[name]) { lv[name] = []; order.push(name); }
+    lv[name].push(sc);
   });
+  order.sort(function (a, b) { return (a === "きほん" ? 0 : 1) - (b === "きほん" ? 0 : 1); });
   var html = "";
   order.forEach(function (name) {
     html += '<div class="lvl">' + name + "</div>";
     lv[name].forEach(function (sc) {
-      var cleared = App.progress.cleared[App.pos].indexOf(sc.id) >= 0;
+      var cleared = App.progress.cleared[me].indexOf(sc.id) >= 0;
       html += '<button class="card" data-id="' + sc.id + '"><span class="t">' + sc.title + "</span>"
         + (cleared ? '<span class="chk">✓ せいかい</span>' : "") + '<span aria-hidden="true">›</span></button>';
     });
@@ -1115,18 +1623,20 @@ document.getElementById("listBody").addEventListener("click", function (ev) {
 // ==== グラウンド図の組み立て（ずかん・クイズで共通） ====
 // opt.trails: 動きの線を出す（★クイズの出題中は答えになるので出さない）
 // opt.ballAtEnd: ボールを着地点に置く（出題中は「どんな打球か」を見せる必要がある）
-// opt.tap: こたえた場所に印を出す
+// opt.tap: こたえた場所に印を出す / opt.focus: ハローを付ける走者id（コーチャーの問いで「この人のこと」を示す）
+// せめるモード: 走者は attack のpathで描く（runsは守備モード専用）。自分は金色。コーチャーはボックスに立つ
 function fieldInner(sc, my, opt) {
   opt = opt || {};
   var inner = "";
-  if (opt.trails) {
+  var atk = isAttack();
+  if (opt.trails && !atk) {
     F.POSN.forEach(function (p) {
       var mv = sc.moves[p];
       if (mv.path.length > 1) {
         var mine = p === my;
         inner += '<path d="' + F.pathD(mv.path) + '" fill="none" stroke="' + (mine ? "#ffd75e" : "#ffffff")
           + '" stroke-width="' + (mine ? 1.2 : 0.6) + '" stroke-dasharray="2 1.6" opacity="' + (mine ? 0.95 : 0.35) + '"/>';
-    }
+      }
     });
   }
   // ボールの線（どんな打球かは出題中も見せる）
@@ -1135,51 +1645,90 @@ function fieldInner(sc, my, opt) {
   inner += '<path d="' + F.ballPathD(sc.ball, sc.traj) + '" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="'
     + (opt.trails ? 0.45 : 0.7) + '"' + ballDash + '/>';
   if (opt.trails) {
-    // 走者の線（あかい点線）— なぜ守備がそう動くのかは、走者を見れば分かる
-    (sc.runs || []).forEach(function (r) {
-      inner += '<path d="' + F.pathD(r.path) + '" fill="none" stroke="#8e2b21" stroke-width="0.9" stroke-dasharray="2.4 1.8" opacity="0.8"/>';
-    });
+    if (atk) {
+      // 走者の線（自分だけ金色）— せめるモードは attack のpathが正しい走り方
+      E.RUNNERN.forEach(function (r) {
+        var m = sc.attack[r];
+        if (!m || m.path.length < 2) return;
+        var mine = r === my;
+        inner += '<path d="' + F.pathD(m.path) + '" fill="none" stroke="' + (mine ? "#ffd75e" : "#8e2b21")
+          + '" stroke-width="' + (mine ? 1.3 : 0.9) + '" stroke-dasharray="2.4 1.8" opacity="' + (mine ? 0.95 : 0.7) + '"/>';
+      });
+    } else {
+      // 走者の線（あかい点線）— なぜ守備がそう動くのかは、走者を見れば分かる
+      (sc.runs || []).forEach(function (r) {
+        inner += '<path d="' + F.pathD(r.path) + '" fill="none" stroke="#8e2b21" stroke-width="0.9" stroke-dasharray="2.4 1.8" opacity="0.8"/>';
+      });
+    }
   }
-  // 選手（自分だけ大きく金色）
+  // 守備（せめるモードでは全員うすく）
   F.POSN.forEach(function (p) {
     var mv = sc.moves[p];
     var start = mv.path.length ? mv.path[0] : F.POS[p];
-    inner += (p === my)
+    inner += (!atk && p === my)
       ? F.playerSVG(p, start, { r: 5.2, fill: "#ffd75e", stroke: "#3d2c05", sw: 1.1, ink: "#3d2c05" })
       : F.playerSVG(p, start, { r: 4, fill: "#ffffff", stroke: "#1c2a24", sw: 0.7, cls: "dim" });
   });
   // 走者（守備の上に描く。かさなっても見えるように）
-  (sc.runs || []).forEach(function (r) { inner += F.runnerSVG(r.id, r.path[0]); });
+  if (atk) {
+    E.RUNNERN.forEach(function (r) {
+      var m = sc.attack[r]; if (!m) return;
+      var o = (r === my) ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink } : {};
+      if (opt.focus === r) o.halo = true;
+      inner += F.runnerSVG(r, m.path[0], o);
+    });
+    ["coach1", "coach3"].forEach(function (c) {
+      if (!sc.attack[c]) return;
+      inner += F.coachSVG(c, F.ROLE_POS[c], c === my ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink } : {});
+    });
+  } else {
+    (sc.runs || []).forEach(function (r) { inner += F.runnerSVG(r.id, r.path[0]); });
+  }
   // こたえた場所の印（白いふちで、どんな背景でも見える）
   if (opt.tap) {
     inner += '<g class="tapmark"><circle cx="' + opt.tap[0] + '" cy="' + opt.tap[1] + '" r="3.6" fill="none" stroke="#ffffff" stroke-width="2.2"/>'
       + '<circle cx="' + opt.tap[0] + '" cy="' + opt.tap[1] + '" r="3.6" fill="none" stroke="#1c2a24" stroke-width="1.1"/></g>';
   }
+  // アウトカウントのランプ（右上の場外。走塁の判断はアウトで変わるので、いつも見える所に）
+  inner += F.outsSVG(sc.situation.outs);
   var b = opt.ballAtEnd ? sc.ball[sc.ball.length - 1] : sc.ball[0];
   inner += '<circle class="ball" cx="' + b[0] + '" cy="' + b[1] + '" r="1.9" fill="#ffffff" stroke="#3d2c05" stroke-width="0.7"/>';
   return inner;
 }
 var LEGEND = '<span><i class="sw mine"></i>自分</span><span><i class="sw def"></i>守り</span>'
   + '<span><i class="sw run"></i>ランナー</span><span><i class="sw ball"></i>ボール</span>';
+var ALEGEND = '<span><i class="sw mine"></i>自分</span><span><i class="sw run"></i>ランナー</span>'
+  + '<span><i class="sw coach"></i>コーチャー</span><span><i class="sw def"></i>守り</span><span><i class="sw ball"></i>ボール</span>';
+function legend() { return isAttack() ? ALEGEND : LEGEND; }
 
 // ==== ずかん: 再生 ====
 var animRAF = null;
 function renderPlay() {
-  var sc = App.sc, my = App.pos;
+  var sc = App.sc, my = meRole();
   $("playSit").textContent = sitText(sc);
   $("playField").innerHTML = F.fieldSVG("play", fieldInner(sc, my, { trails: true }));
-  $("legend").innerHTML = LEGEND;
-
-  var mv = sc.moves[my];
-  $("myCard").innerHTML = '<div class="role">' + F.POS_JA[my] + " の役目 ／ " + mv.role + "</div>"
-    + '<div class="why">' + mv.why + "</div>";
+  $("legend").innerHTML = legend();
 
   var rows = "";
-  F.POSN.forEach(function (p) {
-    var m = sc.moves[p];
-    rows += '<div class="row' + (p === my ? " me" : "") + '"><div class="n">' + F.POS_NUM[p] + "</div>"
-      + '<div class="txt"><b>' + F.POS_JA[p] + '</b><span class="r">' + m.role + "</span><br>" + m.why + "</div></div>";
-  });
+  if (isAttack()) {
+    var a = sc.attack[my];
+    $("myCard").innerHTML = '<div class="role">' + E.ROLE_JA[my] + " の役目</div>"
+      + '<div class="why">' + (a.decision ? '<span class="dec">' + a.decision + "</span>" : "") + a.why + "</div>";
+    E.attackRoles(sc).forEach(function (r) {
+      var m = sc.attack[r];
+      rows += '<div class="row' + (r === my ? " me" : "") + '"><div class="n">' + (E.isCoach(r) ? "コ" : (r === "B" ? "打" : "走")) + "</div>"
+        + '<div class="txt"><b>' + E.ROLE_JA[r] + '</b><span class="r">' + (m.decision || "こえをかける") + "</span><br>" + m.why + "</div></div>";
+    });
+  } else {
+    var mv = sc.moves[my];
+    $("myCard").innerHTML = '<div class="role">' + F.POS_JA[my] + " の役目 ／ " + mv.role + "</div>"
+      + '<div class="why">' + mv.why + "</div>";
+    F.POSN.forEach(function (p) {
+      var m = sc.moves[p];
+      rows += '<div class="row' + (p === my ? " me" : "") + '"><div class="n">' + F.POS_NUM[p] + "</div>"
+        + '<div class="txt"><b>' + F.POS_JA[p] + '</b><span class="r">' + m.role + "</span><br>" + m.why + "</div></div>";
+    });
+  }
   $("allRows").innerHTML = rows;
 
   animate("playField", sc, my);
@@ -1187,23 +1736,29 @@ function renderPlay() {
 function animate(hostId, sc, my) {
   if (animRAF) cancelAnimationFrame(animRAF);
   var host = $(hostId);
+  var atk = isAttack();
   var actors = {};
   F.POSN.forEach(function (p) { actors[p] = host.querySelector('.actor[data-pos="' + p + '"]'); });
   var runners = {};
-  (sc.runs || []).forEach(function (r) { runners[r.id] = host.querySelector('.runner[data-run="' + r.id + '"]'); });
+  // せめるモードは attack のpath（正しい走り方）で動かす。まもるモードは runs（守備が備える相手の動き）
+  var runList = atk
+    ? E.RUNNERN.filter(function (r) { return sc.attack[r]; }).map(function (r) { return { id: r, path: sc.attack[r].path, wait: sc.attack[r].wait }; })
+    : (sc.runs || []);
+  runList.forEach(function (r) { runners[r.id] = host.querySelector('.runner[data-run="' + r.id + '"]'); });
   var ball = host.querySelector(".ball");
+  // ボールが先・人が追う。フライは滞空が長い（着地までの時間で描き分ける）
+  var land = sc.traj === "fly" ? 0.7 : sc.traj === "grounder" ? 0.4 : 0.5;
   var setAt = function (t) {
     F.POSN.forEach(function (p) {
       var mv = sc.moves[p];
       var pt = mv.path.length ? F.lerpPath(mv.path, t) : F.POS[p];
       actors[p].setAttribute("transform", "translate(" + pt[0] + " " + pt[1] + ")");
     });
-    (sc.runs || []).forEach(function (r) {
-      var pt = F.lerpPath(r.path, t);
-      runners[r.id].setAttribute("transform", "translate(" + pt[0] + " " + pt[1] + ")");
+    runList.forEach(function (r) {
+      // wait付き＝「捕ってから走る」（タッチアップ・ハーフウェイ）。着地の瞬間に pts[wait] に居る
+      var pt = atk ? F.lerpPathWait(r.path, r.wait, t, land) : F.lerpPath(r.path, t);
+      if (runners[r.id]) runners[r.id].setAttribute("transform", "translate(" + pt[0] + " " + pt[1] + ")");
     });
-    // ボールが先・人が追う。フライは滞空が長い（着地までの時間で描き分ける）
-    var land = sc.traj === "fly" ? 0.7 : sc.traj === "grounder" ? 0.4 : 0.5;
     var bp = F.lerpBall(sc.ball, sc.traj, Math.min(1, t / land));
     ball.setAttribute("cx", bp[0]); ball.setAttribute("cy", bp[1]);
   };
@@ -1219,28 +1774,64 @@ function animate(hostId, sc, my) {
     if (t < 1) animRAF = requestAnimationFrame(step);
   });
 }
-$("btnReplay").onclick = function () { animate("playField", App.sc, App.pos); };
+$("btnReplay").onclick = function () { animate("playField", App.sc, meRole()); };
 
 // ==== クイズ ====
 function startQuiz() {
-  var list = E.pickQuiz(SCENARIOS, App.pos, App.progress.cleared[App.pos], 10, Math.random);
-  App.quiz = { list: list, i: 0, correct: 0, tap: null, answered: false };
+  var me = meRole();
+  var list = E.pickQuiz(myScenes(), me, App.progress.cleared[me], 10, Math.random);
+  App.quiz = { list: list, i: 0, correct: 0, tap: null, answered: false, qs: [], qi: 0, marks: [] };
   go("quiz");
 }
+// 問いの言葉。せめるモードは ask で2種類（dest=どこまで行く？ / catch=捕られる瞬間どこ？）
+function askText(sc, me, rid) {
+  var catchQ = isAttack() && sc.attack.ask === "catch";
+  var hint = catchQ ? "もどるなら今いるるい・様子を見るなら、るいとるいの間をタップ" : "止まるなら、今いるるいをタップ";
+  if (!isAttack())
+    return "きみは <b>" + F.POS_NUM[me] + " " + F.POS_JA[me] + "</b>。どこへ動く？"
+      + '<span class="hint">グラウンドをタップしてね（動かないと思ったら、今の場所をタップ）</span>';
+  if (E.isCoach(me))
+    return "きみは <b>" + E.ROLE_JA[me] + "</b>。<b>" + E.ROLE_JA[rid] + "</b> は"
+      + (catchQ ? "、ボールが取られるしゅんかん、どこにいるのが正かい？" : "どこまで行かせる？")
+      + '<span class="hint">' + hint + "</span>";
+  return "きみは <b>" + E.ROLE_JA[me] + "</b>。"
+    + (catchQ ? "フライが上がった！ボールが取られるしゅんかん、どこにいる？" : "ボールが飛んだ！どこまで行く？")
+    + '<span class="hint">' + hint + "</span>";
+}
 function renderQuiz() {
-  var q = App.quiz, sc = q.list[q.i], my = App.pos;
+  var q = App.quiz, sc = q.list[q.i], me = meRole();
   q.tap = null; q.answered = false;
+  q.qs = isAttack() ? E.attackQuestions(sc, me) : [me];
+  q.qi = 0; q.marks = [];
   $("qCount").textContent = "クイズ " + (q.i + 1) + " / " + q.list.length;
   $("qScore").textContent = "正かい " + q.correct;
   $("qSit").textContent = sitText(sc);
-  $("qAsk").innerHTML = "きみは <b>" + F.POS_NUM[my] + " " + F.POS_JA[my] + "</b>。どこへ動く？"
-    + '<span class="hint">グラウンドをタップしてね（動かないと思ったら、今の場所をタップ）</span>';
-  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, my, { ballAtEnd: true }));
-  $("qLegend").innerHTML = LEGEND;
+  renderQuestion();
   $("qActions").innerHTML = '<button class="bigbtn primary" id="btnConfirm" style="width:100%;justify-content:center" disabled>ここ！</button>';
   $("btnConfirm").onclick = confirmAnswer;
   $("qFeedback").style.display = "none";
   $("qFeedback").innerHTML = "";
+}
+// コーチャーは走者を続けて聞くので、どこまで答えたかを小さく出す
+function subqHTML() {
+  var q = App.quiz;
+  if (q.qs.length <= 1) return "";
+  return q.qs.map(function (r, i) {
+    var m = q.marks[i];
+    var cls = m === undefined ? "" : (m ? "ok" : "ng");
+    return '<span class="' + cls + '">' + E.ROLE_JA[r] + (m === undefined ? "" : (m ? " ◯" : " ✕")) + "</span>";
+  }).join("");
+}
+// 1問の中の「いま聞いとる走者」を描く
+function renderQuestion() {
+  var q = App.quiz, sc = q.list[q.i], me = meRole();
+  var rid = q.qs[q.qi];
+  $("qAsk").innerHTML = askText(sc, me, rid);
+  // コーチャーの問いでは、いま聞いとる走者にハローを付けて「この人のこと」と分かるようにする
+  var focus = (isAttack() && E.isCoach(me)) ? rid : null;
+  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, me, { ballAtEnd: true, tap: q.tap, focus: focus }));
+  $("qLegend").innerHTML = legend();
+  $("qSub").innerHTML = subqHTML();
 }
 // グラウンドのタップ位置を 0-100 の座標にする
 document.getElementById("qField").addEventListener("click", function (ev) {
@@ -1254,30 +1845,46 @@ document.getElementById("qField").addEventListener("click", function (ev) {
     Math.round((ev.clientX - r.left) / r.width * 1000) / 10,
     Math.round((ev.clientY - r.top) / r.height * 1000) / 10
   ];
-  var sc = q.list[q.i];
-  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, App.pos, { ballAtEnd: true, tap: q.tap }));
+  renderQuestion();
   $("btnConfirm").disabled = false;
 });
 function confirmAnswer() {
-  var q = App.quiz, sc = q.list[q.i], my = App.pos;
+  var q = App.quiz, sc = q.list[q.i], me = meRole();
   if (!q.tap || q.answered) return;
+  var res = isAttack() ? E.judgeRunner(sc, q.qs[q.qi], q.tap) : E.judge(sc, me, q.tap);
+  q.marks.push(res.correct);
+  // コーチャーで、まだ聞く走者が残っとる → 次の走者へ（答えはまだ見せん）
+  if (q.qi < q.qs.length - 1) {
+    q.qi++; q.tap = null;
+    renderQuestion();
+    $("btnConfirm").disabled = true;
+    return;
+  }
   q.answered = true;
-  var res = E.judge(sc, my, q.tap);
-  if (res.correct) q.correct++;
-  App.progress = E.applyResult(App.progress, my, sc.id, res.correct);
+  var allOk = q.marks.every(function (m) { return m; });
+  if (allOk) q.correct++;
+  App.progress = E.applyResult(App.progress, me, sc.id, allOk);
   save(); // 1問ごとに保存（とちゅうで止めても消えない）
 
-  var mv = sc.moves[my];
   $("qScore").textContent = "正かい " + q.correct;
-  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, my, { trails: true, tap: q.tap }));
-  animate("qField", sc, my); // 正解の動きをアニメで見せる（自分のタップ印は残したまま）
+  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, me, { trails: true, tap: q.tap }));
+  animate("qField", sc, me); // 正解の動きをアニメで見せる（自分のタップ印は残したまま）
+  $("qSub").innerHTML = subqHTML();
   var last = q.i >= q.list.length - 1;
+  var explain;
+  if (isAttack()) {
+    var a = sc.attack[me];
+    explain = (a.decision ? '<span class="dec">' + a.decision + "</span>" : "") + a.why;
+  } else {
+    var mv = sc.moves[me];
+    explain = mv.role + "：" + mv.why;
+  }
   $("qFeedback").style.display = "";
   $("qFeedback").innerHTML =
-    '<div class="judge ' + (res.correct ? "ok" : "ng") + '">'
-    + '<div class="mark">' + (res.correct ? "◯ 正かい！" : "✕ ちがったよ") + "</div>"
-    + '<div class="why">' + mv.role + "：" + mv.why + "</div>"
-    + (res.correct ? "" : '<div class="note" style="margin-top:6px">金色のせんしゅが動いた先が正かいだよ</div>')
+    '<div class="judge ' + (allOk ? "ok" : "ng") + '">'
+    + '<div class="mark">' + (allOk ? "◯ 正かい！" : "✕ ちがったよ") + "</div>"
+    + '<div class="why">' + explain + "</div>"
+    + (allOk ? "" : '<div class="note" style="margin-top:6px">' + (isAttack() ? "金色の人が動いた先が正かいだよ" : "金色のせんしゅが動いた先が正かいだよ") + "</div>")
     + "</div>";
   $("qActions").innerHTML = '<button class="bigbtn primary" id="btnNext" style="width:100%;justify-content:center">'
     + (last ? "けっかを見る" : "次へ") + "</button>";
@@ -1286,10 +1893,10 @@ function confirmAnswer() {
   };
 }
 function renderResult() {
-  var q = App.quiz;
+  var q = App.quiz, me = meRole();
   $("rScore").textContent = q.correct + " / " + q.list.length + " 正かい";
-  var done = App.progress.cleared[App.pos].length;
-  $("rDetail").textContent = F.POS_JA[App.pos] + "で正かいした場面：" + done + " / " + SCENARIOS.length;
+  var done = App.progress.cleared[me].length;
+  $("rDetail").textContent = (isAttack() ? E.ROLE_JA[me] : F.POS_JA[me]) + "で正かいした場面：" + done + " / " + myScenes().length;
 }
 $("btnQuizAgain").onclick = startQuiz;
 $("btnToHome").onclick = function () { go("home"); };
@@ -1316,8 +1923,8 @@ function go(screen) {
   window.scrollTo(0, 0);
 }
 $("btnBack").onclick = function () { go(App.screen === "play" ? "list" : "home"); };
-$("btnZukan").onclick = function () { if (App.pos) go("list"); };
-$("btnQuiz").onclick = function () { if (App.pos) startQuiz(); };
+$("btnZukan").onclick = function () { if (meRole()) go("list"); };
+$("btnQuiz").onclick = function () { if (meRole()) startQuiz(); };
 
 // ==== 起動 ====
 load();
