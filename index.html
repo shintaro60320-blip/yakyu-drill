@@ -409,17 +409,22 @@ const F = (() => {
   // アウトカウントのランプ（グラウンド右上の場外に置く。とと 2026-09-03「右上あたりにアウトカウント」）
   //   走塁の判断はアウトの数で変わるので、文章だけでなく試合のスコアボードと同じ「赤いランプ」で見せる。
   //   点灯＝走者と同じ赤(#8e2b21)+白ふち（場外#2c5f3fの上で白ふちが7.46:1）／消灯＝白のふちだけ。ボール・ストライクは出さん（打った後の判断に関係ない）
+  //   ★座標は図（0-100）に収まること: 右端＝69+26+1.9=96.9。前は translate(76) で3つ目が x=102 に出て切れ、
+  //     2つ目の消灯の輪だけが端に「白い点」として残っとった（とと 2026-09-03 指摘）。テスト A6 で右端を検査する
+  const OUTS_X = 69, OUTS_Y = 6, OUTS_R = 1.9, OUTS_CX = [16, 21, 26];
   const outsSVG = (outs) => {
     const n = Math.max(0, Math.min(2, outs | 0));
-    let s = '<g class="outs" transform="translate(76 6)">'
+    let s = '<g class="outs" transform="translate(' + OUTS_X + ' ' + OUTS_Y + ')">'
       + '<text x="0" y="1.5" font-size="3.6" font-weight="700" fill="#ffffff" opacity="0.9">アウト</text>';
-    for (let i = 0; i < 3; i++) {
+    OUTS_CX.forEach((cx, i) => {
       const on = i < n;
-      s += '<circle cx="' + (16 + i * 5) + '" cy="0" r="1.9" fill="' + (on ? "#8e2b21" : "none")
-        + '" stroke="#ffffff" stroke-width="' + (on ? 0.8 : 0.6) + '" opacity="' + (on ? 1 : 0.55) + '"/>';
-    }
+      s += '<circle cx="' + cx + '" cy="0" r="' + OUTS_R + '" fill="' + (on ? "#8e2b21" : "rgba(0,0,0,0.28)")
+        + '" stroke="#ffffff" stroke-width="' + (on ? 0.8 : 0.6) + '" opacity="' + (on ? 1 : 0.75) + '"/>';
+    });
     return s + '</g>';
   };
+  // ランプの右端（テスト用。図からはみ出さんことの検査）
+  const outsRight = () => OUTS_X + OUTS_CX[OUTS_CX.length - 1] + OUTS_R + 0.4;
 
   // グラウンド図。uid=1画面に複数置くときのid衝突よけ / inner=図の上に重ねる要素
   const fieldSVG = (uid, inner) => {
@@ -447,7 +452,7 @@ const F = (() => {
     return s;
   };
 
-  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, ROLE_POS, dist, inFair, pathD, lerpPath, lerpPathWait, ballPathD, lerpBall, playerSVG, runnerSVG, coachSVG, outsSVG, fieldSVG };
+  return { HOME, BASES, POS, POSN, POS_JA, POS_NUM, ROLE_POS, dist, inFair, pathD, lerpPath, lerpPathWait, ballPathD, lerpBall, playerSVG, runnerSVG, coachSVG, outsSVG, outsRight, fieldSVG };
 })();
 if (typeof module !== "undefined") module.exports = F;
 
@@ -1531,11 +1536,12 @@ function toast(msg) {
 function $(id) { return document.getElementById(id); }
 
 // ==== 表示のことば ====
-function sitText(sc) {
+function sitText(sc, withOuts) {
   var r = sc.situation.runners;
   var run = r.length ? "ランナー " + r.map(function (x) { return x + "るい"; }).join("・") : "ランナーなし";
-  // アウトカウントは文章に書かず、グラウンド右上のランプ（F.outsSVG）で見せる
-  return run + "・" + sc.situation.play;
+  // ずかんはグラウンド右上のランプ（F.outsSVG）だけ。クイズは判断に効くので言葉でも出す（withOuts）
+  var o = sc.situation.outs;
+  return run + "・" + sc.situation.play + (withOuts ? "・" + (o === 0 ? "ノーアウト" : o + "アウト") : "");
 }
 
 // ==== ホーム画面 ====
@@ -1805,7 +1811,7 @@ function renderQuiz() {
   q.qi = 0; q.marks = [];
   $("qCount").textContent = "クイズ " + (q.i + 1) + " / " + q.list.length;
   $("qScore").textContent = "正かい " + q.correct;
-  $("qSit").textContent = sitText(sc);
+  $("qSit").textContent = sitText(sc, true);
   renderQuestion();
   $("qActions").innerHTML = '<button class="bigbtn primary" id="btnConfirm" style="width:100%;justify-content:center" disabled>ここ！</button>';
   $("btnConfirm").onclick = confirmAnswer;
