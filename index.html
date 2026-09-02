@@ -68,7 +68,9 @@ button[disabled] { opacity: .45; cursor: default; }
 .actor { transition: none; }
 .actor.dim { opacity: .72; }
 .actor.pick { cursor: pointer; }
-.halo { transform-origin: center; animation: halo 2.6s cubic-bezier(.4,0,.6,1) infinite; }
+/* SVGの中では transform-origin:center が「図全体の中心」になり、輪が斜めにずれて広がっとった（とと 2026-09-03 指摘）。
+   transform-box:fill-box で基準点をマーカー自身の中心にする */
+.halo { transform-box: fill-box; transform-origin: center; animation: halo 2.6s cubic-bezier(.4,0,.6,1) infinite; }
 @keyframes halo { 0% { transform: scale(1); opacity: .5; } 70%, 100% { transform: scale(2.2); opacity: 0; } }
 
 .posname { text-align: center; font-size: 1.05rem; font-weight: 800; margin-bottom: var(--s1); }
@@ -409,9 +411,9 @@ const F = (() => {
   // アウトカウントのランプ（グラウンド右上の場外に置く。とと 2026-09-03「右上あたりにアウトカウント」）
   //   走塁の判断はアウトの数で変わるので、文章だけでなく試合のスコアボードと同じ「赤いランプ」で見せる。
   //   点灯＝走者と同じ赤(#8e2b21)+白ふち（場外#2c5f3fの上で白ふちが7.46:1）／消灯＝白のふちだけ。ボール・ストライクは出さん（打った後の判断に関係ない）
-  //   ★座標は図（0-100）に収まること: 右端＝69+26+1.9=96.9。前は translate(76) で3つ目が x=102 に出て切れ、
+  //   ★ランプは2つ（とと 2026-09-03「3アウトはチェンジ。スコアボードも2つ」）。座標は図（0-100）に収まること: 右端＝69+21+1.9=91.9。前は translate(76) で3つ目が x=102 に出て切れ、
   //     2つ目の消灯の輪だけが端に「白い点」として残っとった（とと 2026-09-03 指摘）。テスト A6 で右端を検査する
-  const OUTS_X = 69, OUTS_Y = 6, OUTS_R = 1.9, OUTS_CX = [16, 21, 26];
+  const OUTS_X = 69, OUTS_Y = 6, OUTS_R = 1.9, OUTS_CX = [16, 21];
   const outsSVG = (outs) => {
     const n = Math.max(0, Math.min(2, outs | 0));
     let s = '<g class="outs" transform="translate(' + OUTS_X + ' ' + OUTS_Y + ')">'
