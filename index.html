@@ -1632,6 +1632,7 @@ document.getElementById("listBody").addEventListener("click", function (ev) {
 // opt.trails: 動きの線を出す（★クイズの出題中は答えになるので出さない）
 // opt.ballAtEnd: ボールを着地点に置く（出題中は「どんな打球か」を見せる必要がある）
 // opt.tap: こたえた場所に印を出す / opt.focus: ハローを付ける走者id（コーチャーの問いで「この人のこと」を示す）
+// opt.selfHalo: 自分のマーカーにホームと同じ脈打つ輪を付ける（クイズの出題中。とと 2026-09-03「選んだ時とクイズで整合性を」）
 // せめるモード: 走者は attack のpathで描く（runsは守備モード専用）。自分は金色。コーチャーはボックスに立つ
 function fieldInner(sc, my, opt) {
   opt = opt || {};
@@ -1674,20 +1675,20 @@ function fieldInner(sc, my, opt) {
     var mv = sc.moves[p];
     var start = mv.path.length ? mv.path[0] : F.POS[p];
     inner += (!atk && p === my)
-      ? F.playerSVG(p, start, { r: 5.2, fill: "#ffd75e", stroke: "#3d2c05", sw: 1.1, ink: "#3d2c05" })
+      ? F.playerSVG(p, start, { r: 5.2, fill: "#ffd75e", stroke: "#3d2c05", sw: 1.1, ink: "#3d2c05", halo: !!opt.selfHalo })
       : F.playerSVG(p, start, { r: 4, fill: "#ffffff", stroke: "#1c2a24", sw: 0.7, cls: "dim" });
   });
   // 走者（守備の上に描く。かさなっても見えるように）
   if (atk) {
     E.RUNNERN.forEach(function (r) {
       var m = sc.attack[r]; if (!m) return;
-      var o = (r === my) ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink } : {};
+      var o = (r === my) ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink, halo: !!opt.selfHalo } : {};
       if (opt.focus === r) o.halo = true;
       inner += F.runnerSVG(r, m.path[0], o);
     });
     ["coach1", "coach3"].forEach(function (c) {
       if (!sc.attack[c]) return;
-      inner += F.coachSVG(c, F.ROLE_POS[c], c === my ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink } : {});
+      inner += F.coachSVG(c, F.ROLE_POS[c], c === my ? { r: 4.6, fill: GOLD.fill, stroke: GOLD.stroke, ink: GOLD.ink, halo: !!opt.selfHalo } : {});
     });
   } else {
     (sc.runs || []).forEach(function (r) { inner += F.runnerSVG(r.id, r.path[0]); });
@@ -1837,7 +1838,7 @@ function renderQuestion() {
   $("qAsk").innerHTML = askText(sc, me, rid);
   // コーチャーの問いでは、いま聞いとる走者にハローを付けて「この人のこと」と分かるようにする
   var focus = (isAttack() && E.isCoach(me)) ? rid : null;
-  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, me, { ballAtEnd: true, tap: q.tap, focus: focus }));
+  $("qField").innerHTML = F.fieldSVG("quiz", fieldInner(sc, me, { ballAtEnd: true, tap: q.tap, focus: focus, selfHalo: true }));
   $("qLegend").innerHTML = legend();
   $("qSub").innerHTML = subqHTML();
 }
