@@ -173,6 +173,17 @@ button[disabled] { opacity: .45; cursor: default; }
   opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 50; }
 .toast.on { opacity: .95; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* このアプリについて（ホームの一番下・大人向け）。
+   ★子ども向けの本文は小3までの漢字にしとるが、ここだけは大人（保護者・監督）が読む欄なので
+     普通の日本語で書く。「ゆうせん」「へんしん」と開くと、かえって読みにくうなる。
+     小さく静かな見た目にして、子どもは自然に飛ばす形にした。 */
+.about { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--line);
+  font-size: .78rem; line-height: 1.9; color: var(--sub); }
+.about b { color: var(--ink); font-weight: 700; }
+.about ul { list-style: none; margin-top: var(--s2); }
+.about li { padding-left: 1em; text-indent: -1em; }
+.about a { color: var(--green); word-break: break-all; }
 </style>
 </head>
 <body>
@@ -197,6 +208,17 @@ button[disabled] { opacity: .45; cursor: default; }
   <div class="bigbtns">
     <button class="bigbtn primary" id="btnZukan">ずかんを見る<span class="sub">みんなの動きをアニメで</span></button>
     <button class="bigbtn" id="btnQuiz">クイズにちょうせん<span class="sub">どこへ動くかタップで答える</span></button>
+  </div>
+
+  <div class="about">
+    <b>やきゅうドリル</b>　作った人：とと（少年野球のコーチ）<br>
+    無料です。広告も、登録も、記録の送信もありません。
+    <ul>
+      <li>・ここに出てくる動きは<b>一般的な基本の形</b>です。チームの教え方が優先です。</li>
+      <li>・アップデートやサポートの予定はありません。</li>
+      <li>・感想はうれしいです。ただ、返信や修正はお約束できません。<br>
+        <a href="mailto:toto.kosodate.kodo@gmail.com">toto.kosodate.kodo@gmail.com</a></li>
+    </ul>
   </div>
 </div>
 
