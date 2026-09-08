@@ -184,6 +184,18 @@ button[disabled] { opacity: .45; cursor: default; }
 .about ul { list-style: none; margin-top: var(--s2); }
 .about li { padding-left: 1em; text-indent: -1em; }
 .about a { color: var(--green); word-break: break-all; }
+
+/* アプリ内ブラウザ（LINE等）で開いた時だけ出る案内。
+   ★LINEの中のブラウザは「ホーム画面に追加」が出せん（とと 2026-09-08 指摘）。
+     リンクはLINEで配るので、ほとんどの人が最初にここに来る＝一番詰まる所。
+     一度閉じたら覚えとく（localStorage）。しつこく出さん。 */
+.inapp { display: flex; gap: var(--s2); align-items: flex-start;
+  background: var(--amber-pale); border: 1px solid #e7cfa4; border-radius: var(--r-card);
+  padding: 12px var(--s3); margin-bottom: var(--s3); font-size: .85rem; line-height: 1.8; }
+.inapp[hidden] { display: none; }
+.inapp b { color: var(--amber); }
+.inapp .x { flex: none; align-self: center; background: transparent; border: none; color: var(--sub);
+  font-size: 1.2rem; line-height: 1; padding: 6px 2px; }
 </style>
 </head>
 <body>
@@ -195,6 +207,13 @@ button[disabled] { opacity: .45; cursor: default; }
 
 <!-- ===== ホーム: ポジションをえらぶ ===== -->
 <div class="wrap" id="scHome">
+  <div class="inapp" id="inappTip" hidden>
+    <div><b>ホーム画面に置きたい人へ</b><br>
+      いまLINEなどの中でひらいています。このままだとホーム画面に追加できません。
+      画面のすみにある <b>…</b> や <b>↗</b> から「<b>ブラウザで開く</b>」（Safari・Chrome）を選んでから、
+      「ホーム画面に追加」をしてください。</div>
+    <button class="x" id="inappClose" aria-label="閉じる">×</button>
+  </div>
   <div class="modetabs">
     <button class="tab on" id="tabDefense" data-mode="defense">まもる</button>
     <button class="tab" id="tabAttack" data-mode="attack">せめる</button>
@@ -1992,6 +2011,31 @@ function go(screen) {
 $("btnBack").onclick = function () { go(App.screen === "play" ? "list" : "home"); };
 $("btnZukan").onclick = function () { if (meRole()) go("list"); };
 $("btnQuiz").onclick = function () { if (meRole()) startQuiz(); };
+
+// ==== アプリ内ブラウザの案内 ====
+// LINE等のアプリ内ブラウザは「ホーム画面に追加」が出せん（とと 2026-09-08）。
+// リンクはLINEで配るので、ほとんどの人がまずここに来る＝一番詰まる所。
+// 判定はUAの目印だけ（LINEは"Line/"、他も同じ流儀）。外したら案内が出んだけで、アプリは普通に動く。
+var INAPP_KEY = "yakyu-drill-inapp-closed";
+function isInAppBrowser() {
+  // 既にホーム画面から起動しとる（インストール済み）なら要らん
+  var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches)
+    || navigator.standalone === true;
+  if (standalone) return false;
+  var ua = navigator.userAgent || "";
+  return / Line\/|\bLine\/|FBAN|FBAV|Instagram|Twitter for|TwitterAndroid/i.test(ua);
+}
+(function () {
+  var tip = $("inappTip");
+  if (!tip) return;
+  var closed = false;
+  try { closed = localStorage.getItem(INAPP_KEY) === "1"; } catch (e) { /* 使えん端末でも案内は出す */ }
+  if (!closed && isInAppBrowser()) tip.hidden = false;
+  $("inappClose").onclick = function () {
+    tip.hidden = true;
+    try { localStorage.setItem(INAPP_KEY, "1"); } catch (e) { /* 保存できんでも閉じるだけはする */ }
+  };
+})();
 
 // ==== 起動 ====
 load();
