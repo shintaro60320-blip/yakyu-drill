@@ -9,21 +9,21 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>やきゅうドリル</title>
+<title>やきゅうクイズ</title>
 
 <!-- SNS・LINEに貼った時のプレビュー（OGP）。
      ★og:image は絶対URLでないと出ん（LINE・Xの仕様）。画像は gen_ogp.py で作る。 -->
-<meta name="description" content="子どもが「自分のポジションの動き、おぼえたい」と思ったときに、遊びながらおぼえる少年野球のクイズ。9つのポジションの守備25場面と、バッター・ランナー・コーチャーの走塁20場面。無料・登録なし・広告なし。">
+<meta name="description" content="遊びながら守備やランナーの動きが学べる少年野球のクイズ。子どもが「自分のポジションの動き、おぼえたい」と思ったときに。9つのポジションの守備25場面と、バッター・ランナー・コーチャーの走塁20場面。無料・登録なし・広告なし。">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="やきゅうドリル">
+<meta property="og:site_name" content="やきゅうクイズ">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="やきゅうドリル｜自分のポジションの動きを、遊びながらおぼえる">
-<meta property="og:description" content="子どもが「自分のポジションの動き、おぼえたい」と思ったときに、遊びながらおぼえる少年野球のクイズ。9つのポジションの守備25場面と、バッター・ランナー・コーチャーの走塁20場面。無料・登録なし・広告なし。">
+<meta property="og:title" content="やきゅうクイズ｜遊びながら守備やランナーの動きが学べる">
+<meta property="og:description" content="遊びながら守備やランナーの動きが学べる少年野球のクイズ。子どもが「自分のポジションの動き、おぼえたい」と思ったときに。9つのポジションの守備25場面と、バッター・ランナー・コーチャーの走塁20場面。無料・登録なし・広告なし。">
 <meta property="og:url" content="https://shintaro60320-blip.github.io/yakyu-drill/">
 <meta property="og:image" content="https://shintaro60320-blip.github.io/yakyu-drill/ogp.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="やきゅうドリル。グラウンドの図に守備の背番号1〜9が並んでいる">
+<meta property="og:image:alt" content="やきゅうクイズ。グラウンドの図に守備の背番号1〜9が並んでいる">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* ==== デザイントークン（実況アプリと同じ家の色。屋外でも読める高コントラスト） ==== */
@@ -217,7 +217,7 @@ button[disabled] { opacity: .45; cursor: default; }
 
 <div class="head">
   <button class="back" id="btnBack" style="display:none">← もどる</button>
-  <h1 id="title">やきゅうドリル</h1>
+  <h1 id="title">やきゅうクイズ</h1>
 </div>
 
 <!-- ===== ホーム: ポジションをえらぶ ===== -->
@@ -245,7 +245,7 @@ button[disabled] { opacity: .45; cursor: default; }
   </div>
 
   <div class="about">
-    <b>やきゅうドリル</b>　作った人：【とと】（少年野球の保護者）<br>
+    <b>やきゅうクイズ</b>　作った人：【とと】（少年野球の保護者）<br>
     子どもが「<b>自分のポジションの動き、おぼえたい</b>」と思ったときに、<b>遊びながらおぼえるクイズ</b>です。<br>
     無料です。広告も、登録も、記録の送信もありません。
     <ul>
@@ -2014,7 +2014,7 @@ function go(screen) {
   $("scQuiz").style.display = screen === "quiz" ? "" : "none";
   $("scResult").style.display = screen === "result" ? "" : "none";
   $("btnBack").style.display = screen === "home" ? "none" : "";
-  $("title").textContent = screen === "home" ? "やきゅうドリル"
+  $("title").textContent = screen === "home" ? "やきゅうクイズ"
     : screen === "list" ? "ずかん"
     : screen === "quiz" ? "クイズ"
     : screen === "result" ? "けっか" : App.sc.title;

@@ -1,6 +1,6 @@
 // やきゅうドリル オフライン対応（ネット優先・失敗したらキャッシュ）
 // 一度ひらけば、グラウンドや車の中の電波が弱いところでも動く。
-const CACHE = 'yakyu-drill-v3';
+const CACHE = 'yakyu-drill-v4';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
